@@ -7,6 +7,7 @@ import { Outlet, useNavigate, useSearchParams } from 'react-router';
 import PodcastGrid from '../components/podcast-grid';
 import { clsx } from 'clsx';
 import { SearchBar } from '../components/search-bar';
+import { addToLibrary } from '../api/podcast';
 
 export const Home = () => {
     const loggedUser = useAtomValue(userProfileAtom);
@@ -46,7 +47,9 @@ export const Home = () => {
                             <PodcastGrid
                                 podcasts={audioBookQuery.data?.items ?? []}
                                 onAdd={podcast => {
-                                    alert(`Add podcast: ${podcast.name}`);
+                                    addToLibrary(token!, podcast.id).then(() =>
+                                        audioBookQuery.refetch(),
+                                    );
                                 }}
                                 onView={podcast =>
                                     navigate(`./${podcast.id}/?${searchParams.toString()}`, { relative: 'path' })

@@ -3,6 +3,7 @@ import { getConnection } from '../data/connection';
 import { LocalUser } from '../types/local-user';
 import { isOkCode } from '../util';
 import { SpotifyUserProfile } from '../types/spotify-api';
+import { AppError, UnauthorizedError } from '../types/error';
 
 export const searchLocalUserByExtrenalId = async (spotifyId: string): Promise<LocalUser | null> => {
     const connection = await getConnection();
@@ -22,12 +23,13 @@ export const createLocalUser = async (
 ): Promise<LocalUser> => {
     const connection = await getConnection();
 
-    const result = await connection.query(
-        'INSERT INTO users (spotify_id, user_name, image_url, refresh_token) VALUES ($1, $2, $3, $4) RETURNING *',
-        [user.id, user.display_name, user.images[0]?.url ?? '', refreshToken],
-    );
+    const result = await connection
+        .query(
+            'INSERT INTO users (spotify_id, user_name, image_url, refresh_token) VALUES ($1, $2, $3, $4) RETURNING *',
+            [user.id, user.display_name, user.images[0]?.url ?? '', refreshToken],
+        )
+        .finally(() => connection.release());
 
-    connection.release();
     return result.rows[0] as LocalUser;
 };
 
@@ -36,11 +38,13 @@ export const updateLocalUserRefreshToken = async (
     refreshToken: string,
 ): Promise<LocalUser | null> => {
     const connection = await getConnection();
-    const result = await connection.query(
-        'UPDATE users SET refresh_token = $1 WHERE spotify_id = $2 RETURNING *',
-        [refreshToken, spotify_id],
-    );
-    connection.release();
+    const result = await connection
+        .query('UPDATE users SET refresh_token = $1 WHERE spotify_id = $2 RETURNING *', [
+            refreshToken,
+            spotify_id,
+        ])
+        .finally(() => connection.release());
+
     return result.rows.length > 0 ? (result.rows[0] as LocalUser) : null;
 };
 
@@ -52,14 +56,13 @@ export const loadUserProfile = async (accessToken: string): Promise<SpotifyUserP
             },
         })
         .catch(error => {
-            console.error('Error fetching user profile:', error);
-            return null;
+            throw new UnauthorizedError(`Failed to fetch user profile`, error);
         });
 
     if (response == null || !isOkCode(response.status)) {
-        throw new Error(`Error fetching user profile: ${response?.statusText}`);
+        throw new AppError(response.statusText, response.status);
     }
 
     return response.data;
 };
-// "BQCac7J78_dd8N06Ye3wp13DD5euu8_7LKgKgbVgFwvA3tYp2PwkJffM6VF5vc6frZ8cP19z2_462o7oXVf--Q55GHHa_XiluzqOjVsTDFe_tnyi1Fz4UJRSCfiygMJAOt4o1cQ5wp3DviQloW2HJivO24GEtTnI3FQdHSfSG82iZb3OPMzGN4ETJ-OVEY6JtHyBdwrtZ0DJjxc77RFswYp-it2Jrd0X4eIYhA"
+

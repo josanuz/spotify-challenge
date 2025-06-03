@@ -2,6 +2,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import Enviroment from '../config/enviroment';
 import { AuthenticationInfo } from '../types/authentication-info';
 import { SpotifyUserProfile } from '../types/spotify-api';
+import { UnauthorizedError } from '../types/error';
 
 const JWT_SECRET = Enviroment.JWT_SECRET;
 const JWT_EXPIRATION = '1h'; // Token expiration time
@@ -61,7 +62,7 @@ export function decodeToken(token: string): AuthenticationInfo | null {
         return decoded as AuthenticationInfo; // Return the decoded payload without verification
     } catch (error) {
         console.error('Token decoding failed:', error);
-        throw new Error('Invalid token');
+        throw new UnauthorizedError('Invalid token format');
     }
 }
 

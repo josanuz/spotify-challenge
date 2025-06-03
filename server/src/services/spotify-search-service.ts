@@ -4,6 +4,7 @@ import {
     SpotifyAudiobookSearchResult,
     SpotifyPodcastResult,
 } from '../types/spotify-api';
+import { UnauthorizedError } from '../types/error';
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
 
@@ -80,10 +81,14 @@ export function searchPodcasts(
 }
 
 export async function getPodcast(accessToken: string, podcastId: string) {
-    const response = await axios.get(`${SPOTIFY_API_BASE}/shows/${podcastId}`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-    return response.data as SpotifyPodcastResult;
+    const response = await axios
+        .get<SpotifyPodcastResult>(`${SPOTIFY_API_BASE}/shows/${podcastId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        })
+        .catch(error => {
+            throw new UnauthorizedError('Invalid access token', error as Error);
+        });
+    return response.data;
 }

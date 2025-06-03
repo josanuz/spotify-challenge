@@ -11,6 +11,7 @@ import { LoginInProgress } from './route-components/login-in-progress.tsx';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fetchUserProfile } from './api/user.ts';
 import PodcastDialog from './route-components/detailed-view-dialog.tsx';
+import PodcastLibraryGrid from './route-components/library-view.tsx';
 
 export const jwtTokenAtom = atom('jwtToken', () => localStorage.getItem('jwtToken'));
 export const currentUserAtom = atom<UserProfile | null>('currentUser', null);
@@ -42,7 +43,7 @@ createRoot(document.getElementById('root')!).render(
                         <Route path="home" element={<Home />}>
                             <Route path=":id" element={<PodcastDialog />} />
                         </Route>
-                        <Route path="library" element={<div>Library Page</div>} />
+                        <Route path="library" element={<PodcastLibraryGrid />} />
                         {/* <Route path="profile" element={<div>Profile Page</div>} /> */}
                         <Route path="*" element={<div>404 Not Found</div>} />
                     </Route>
