@@ -2,12 +2,19 @@ import { RequestHandler } from 'express';
 import {
     extractTokenFromCookie,
     extractTokenFromHeader,
-    isTokenAboutToExpire,
     verifyToken,
 } from '../services/authentication-service';
 
-import Enviroment from '../config/enviroment';
+import { UnauthorizedError } from '../types/error';
 
+/**
+ * Middleware to handle JWT authentication.
+ * It checks for a valid JWT in the request headers or cookies.
+ * If the token is missing or invalid, it throws an UnauthorizedError.
+ *
+ * @param excludePaths - Optional array of paths to exclude from JWT verification.
+ * @returns Express middleware function.
+ */
 export const JWTMiddleware = (excludePaths?: string[]) => {
     const handler: RequestHandler = (req, res, next) => {
         const { path, headers } = req;
@@ -17,30 +24,20 @@ export const JWTMiddleware = (excludePaths?: string[]) => {
             return next();
         }
 
-        // Check for JWT in headers
+        // Check for JWT in headers or cookies
         const token =
             extractTokenFromHeader(headers.authorization) ?? extractTokenFromCookie(req.cookies);
 
         if (!token) {
-            res.status(401).json({ error: 'Unauthorized' });
-            return;
+            throw new UnauthorizedError('No token provided');
         }
 
         // Verify the JWT
         const decoded = verifyToken(token);
         // If verification fails, send an error response
         if (!decoded.valid) {
-            res.status(401).json({ error: 'Invalid token', details: decoded.error });
+            throw new UnauthorizedError('Invalid token');
         } else {
-            // If the token is about to expire, refresh it
-            if (isTokenAboutToExpire(decoded.payload)) {
-                res.cookie('session-token', token, {
-                    secure: Enviroment.MODE == 'production', // Use secure cookies in production
-                    maxAge: 24 * 60 * 60 * 1000, // 1 day
-                    sameSite: 'strict',
-                });
-            }
-
             next(); // Proceed to the next middleware or route handler
         }
     };

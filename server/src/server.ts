@@ -6,11 +6,11 @@ import userRouter from './routes/user';
 import searchRouter from './routes/search';
 import podcastRouter from './routes/podcast';
 import librabryRouter from './routes/lib';
-import Enviroment from './config/enviroment';
+import Environment from './config/enviroment';
 import errorHandler from './middleware/error-handler';
 
 const app = express();
-const port = Enviroment.PORT;
+const port = Environment.PORT;
 
 app.use(express.json());
 app.use(cors());

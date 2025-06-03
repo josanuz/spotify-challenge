@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { extractTokenFromCookie, extractTokenFromHeader, verifyToken } from "./services/authentication-service";
+import { UnauthorizedError } from "./types/error";
 
 export const isOkCode = (status: number): boolean => {
     return status >= 200 && status < 300;
@@ -15,8 +16,9 @@ export const extracSpotifyTokenFromRequest = (req: Request): string => {
 
     const verification = verifyToken(token);
     if (!verification.valid) {
-        throw new Error(`Unauthorized: ${verification.error}`);
+        throw new UnauthorizedError();
     }
+    
     const { third_party_access_token } = verification.payload;
     return third_party_access_token;
 }

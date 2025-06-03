@@ -1,11 +1,11 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import Enviroment from '../config/enviroment';
+import Environment from '../config/enviroment';
 import { AuthenticationInfo } from '../types/authentication-info';
-import { SpotifyUserProfile } from '../types/spotify-api';
+import { SpotifyTokenResponse, SpotifyUserProfile } from '../types/spotify-api';
 import { UnauthorizedError } from '../types/error';
 
-const JWT_SECRET = Enviroment.JWT_SECRET;
-const JWT_EXPIRATION = '1h'; // Token expiration time
+const JWT_SECRET = Environment.JWT_SECRET;
+const JWT_EXPIRATION = '45m'; // Token expiration time
 const JWT_ISSUER = 'audiobooks-app'; // Issuer of the token
 const JWT_AUDIENCE = 'audiobooks-app-users'; // Audience for the token
 
@@ -21,16 +21,16 @@ type FailedVerification = {
 
 export type VerificationResult = SuccesfulVerification | FailedVerification;
 
-export function generateToken(user: SpotifyUserProfile, access_token: string): string {
+export function generateToken(user: SpotifyUserProfile, token: SpotifyTokenResponse): string {
     const payload: AuthenticationInfo = {
         sub: user.id, // Subject: user ID
         name: user.display_name, // Custom claim
         email: user.email, // Custom claim
-        third_party_access_token: access_token, // Custom claim for third-party access token
+        third_party_access_token: token.access_token, // Custom claim for third-party access token
     };
 
     const options: jwt.SignOptions = {
-        expiresIn: JWT_EXPIRATION,
+        expiresIn: token.expires_in - 60, // Use the expires_in from the token response
         audience: JWT_AUDIENCE,
         issuer: JWT_ISSUER,
     };

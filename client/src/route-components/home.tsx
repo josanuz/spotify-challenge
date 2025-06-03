@@ -1,5 +1,5 @@
 import { useAtomValue } from '@zedux/react';
-import { jwtTokenAtom, userProfileAtom } from '../main';
+import { authenticationAtom, userProfileAtom } from '../main';
 import { Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { searchPodcasts } from '../api/search';
@@ -12,7 +12,7 @@ import { addToLibrary } from '../api/podcast';
 export const Home = () => {
     const loggedUser = useAtomValue(userProfileAtom);
     const navigate = useNavigate();
-    const token = useAtomValue(jwtTokenAtom);
+    const { token } = useAtomValue(authenticationAtom);
     const [searchParams, setSearchParams] = useSearchParams();
 
     const audioBookQuery = useQuery({
@@ -52,7 +52,9 @@ export const Home = () => {
                                     );
                                 }}
                                 onView={podcast =>
-                                    navigate(`./${podcast.id}/?${searchParams.toString()}`, { relative: 'path' })
+                                    navigate(`./${podcast.id}/?${searchParams.toString()}`, {
+                                        relative: 'path',
+                                    })
                                 }
                             />
                         )}

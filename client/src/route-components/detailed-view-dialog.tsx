@@ -4,8 +4,8 @@ import type { SpotifyPodcast } from '../types/spotify-api';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from '@zedux/react';
-import { jwtTokenAtom } from '../main';
 import { getPodcast } from '../api/podcast';
+import { authenticationAtom } from '../main';
 
 export const PodcastDetails = ({ podcast }: { podcast: SpotifyPodcast }) => {
     return (
@@ -44,12 +44,12 @@ export const PodcastDetails = ({ podcast }: { podcast: SpotifyPodcast }) => {
 const PodcastDialog = () => {
     const navigate = useNavigate();
     const params = useParams();
-    const jwt = useAtomValue(jwtTokenAtom);
+    const { token } = useAtomValue(authenticationAtom);
 
     const query = useQuery({
         queryKey: ['podcast', params.id!],
-        queryFn: async () => getPodcast(jwt!, params.id!),
-        enabled: !!jwt && !!params.id,
+        queryFn: async () => getPodcast(token!, params.id!),
+        enabled: !!token && !!params.id,
     });
 
     return (
