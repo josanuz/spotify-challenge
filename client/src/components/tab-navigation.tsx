@@ -3,70 +3,78 @@
     It includes a top navigation bar for larger screens and a bottom navigation bar for smaller screens.
     The navigation links are dynamically generated based on the defined tabs.
 */
-import { NavLink, Outlet } from 'react-router'
-import { Home, BookOpen } from 'lucide-react'
+import { Tab, TabGroup, TabList } from '@headlessui/react';
+import { BookOpen, Home } from 'lucide-react';
+import { Link, Outlet } from 'react-router';
 
 /**
  * Default tabs for the navigation.
  */
 const tabs = [
     { to: 'home', label: 'Home', icon: <Home size={20} /> },
-    { to: 'library', label: 'Library', icon: <BookOpen size={20} /> }
-]
+    { to: 'library', label: 'Library', icon: <BookOpen size={20} /> },
+];
 
 const TopNavigation = () => {
-    return tabs.map(({ to, label }) => (
-        <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-                `flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${isActive ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-600'
-                }`
-            }
-        >
-            {label}
-        </NavLink>
-    ))
-
-}
+    return (
+        <TabGroup>
+            <TabList className="flex flex-row gap-4">
+                {tabs.map(({ to, label }) => (
+                    <Tab
+                        as={Link}
+                        key={to}
+                        to={to}
+                        className="data-selected:border-b data-selected:border-green-500 data-selected:text-white data-hover:border-b data-hover:border-green-300/50 text-gray-300 flex items-center gap-2 px-4 py-2 transition-colors"
+                    >
+                        {label}
+                    </Tab>
+                ))}
+            </TabList>
+        </TabGroup>
+    );
+};
 
 const BottomNavigation = () => {
-    return tabs.map(({ to, label, icon }) => (
-        <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-                `flex flex-col items-center justify-center py-2 text-sm ${isActive ? 'text-blue-600' : 'text-gray-500 hover:text-blue-600'
-                }`
-            }
-        >
-            {icon}
-            <span className="text-xs">{label}</span>
-        </NavLink>
-    ))
-}
+    return (
+        <TabGroup>
+            <TabList className="flex flex-row gap-4">
+                {tabs.map(({ to, label, icon }) => (
+                    <Tab
+                        as={Link}
+                        key={to}
+                        to={to}
+                        className="data-selected:text-green-500 data-hover:text-green-100  text-gray-300 flex items-center gap-2 px-4 py-2 transition-colors"
+                    >
+                        {icon}
+                        {label}
+                    </Tab>
+                ))}
+            </TabList>
+        </TabGroup>
+    );
+};
 
 export default function TabNavigation() {
     return (
         <div className="flex flex-col min-h-screen w-screen h-screen">
             {/* Top Navigation for large screens */}
-            <nav className="hidden lg:flex justify-center border-b border-gray-200 bg-white shadow-sm">
+            <nav className="hidden lg:flex justify-center basis-[50px] shrink-0">
                 <div className="flex space-x-8 py-2">
                     <TopNavigation />
                 </div>
             </nav>
 
             {/* Page Content */}
-            <div className="flex-1 p-4 w-full h-full">
+            <div className="grow shrink p-4 w-full">
                 <Outlet />
             </div>
 
             {/* Bottom Navigation for small screens */}
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-inner">
+            <nav className="lg:hidden basis-[50px] shrink-0 border-t border-gray-200 shadow-inner">
                 <div className="flex justify-around">
                     <BottomNavigation />
                 </div>
             </nav>
         </div>
-    )
+    );
 }

@@ -1,7 +1,7 @@
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { getToken } from '../api/auth';
-import { useQuery } from '@tanstack/react-query';
 import { authenticationStore, setAuthentication } from '../state/app-state';
 
 export const LoginInProgress = () => {

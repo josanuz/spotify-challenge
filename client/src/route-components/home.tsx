@@ -1,13 +1,13 @@
-import { useAtomValue } from '@zedux/react';
-import { userProfileAtom } from '../state/app-state';
-import { Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { searchPodcasts } from '../api/search';
-import { Outlet, useNavigate, useSearchParams } from 'react-router';
-import PodcastGrid from '../components/podcast-grid';
+import { useAtomValue } from '@zedux/react';
 import { clsx } from 'clsx';
-import { SearchBar } from '../components/search-bar';
+import { Suspense, useMemo } from 'react';
+import { Outlet, useNavigate, useSearchParams } from 'react-router';
 import { addToLibrary, getLibrary } from '../api/podcast';
+import { searchPodcasts } from '../api/search';
+import PodcastGrid from '../components/podcast-grid';
+import { SearchBar } from '../components/search-bar';
+import { userProfileAtom } from '../state/app-state';
 
 export const Home = () => {
     const loggedUser = useAtomValue(userProfileAtom);
@@ -27,6 +27,20 @@ export const Home = () => {
         refetchOnWindowFocus: false,
     });
 
+    const querySuccessNData = useMemo(() => {
+        if (!audioBookQuery.isSuccess && currentLibraryQuery.isSuccess) return false;
+        const hasData = audioBookQuery.data != null && audioBookQuery.data.items.length > 0;
+        const hasLibrary = currentLibraryQuery.data != null;
+        return hasData && hasLibrary;
+    }, [audioBookQuery, currentLibraryQuery]);
+
+    const querySuccessNNoData = useMemo(() => {
+        if (!audioBookQuery.isSuccess && currentLibraryQuery.isSuccess) return false;
+        const noData = audioBookQuery.data == null || audioBookQuery.data.items.length < 1;
+        const noLibrary = currentLibraryQuery.data == null;
+        return noData || noLibrary;
+    }, [audioBookQuery, currentLibraryQuery]);
+
     if (currentLibraryQuery.isError || audioBookQuery.isError) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -38,9 +52,6 @@ export const Home = () => {
     return (
         <Suspense fallback={<p className="text-center text-xl">Loading user profile...</p>}>
             <div className="flex items-center justify-center h-full flex-col gap-4">
-                <div className="flex items-center box-border justify-end w-full border-b border-amber-50 p-1 pt-0">
-                    {loggedUser?.display_name}
-                </div>
                 <div className="flex flex-col items-center justify-center grow shrink w-full h-full gap-2">
                     <section
                         id="search-section"
@@ -60,7 +71,12 @@ export const Home = () => {
                                 <p className="text-white">Loading</p>
                             </div>
                         )}
-                        {audioBookQuery.isSuccess && (
+                        {querySuccessNNoData && (
+                            <div className="flex items-center justify-center h-full">
+                                <p className="text-white">No Results found</p>
+                            </div>
+                        )}
+                        {querySuccessNData && (
                             <PodcastGrid
                                 library={currentLibraryQuery.data ?? []}
                                 podcasts={audioBookQuery.data?.items ?? []}
@@ -84,4 +100,3 @@ export const Home = () => {
         </Suspense>
     );
 };
-;

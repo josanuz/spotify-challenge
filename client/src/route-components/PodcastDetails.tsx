@@ -12,7 +12,7 @@ export interface PodcastDetailsProps {
 
 /**
  * PodcastDetails component for displaying detailed information about a podcast.
- * this component renders the podcast's image, name, publisher, description, languages, total episodes, and explicit content status. 
+ * this component renders the podcast's image, name, publisher, description, languages, total episodes, and explicit content status.
  * @param {PodcastDetailsProps} props - The properties for the component.
  * @returns {JSX.Element} The rendered component.
  */

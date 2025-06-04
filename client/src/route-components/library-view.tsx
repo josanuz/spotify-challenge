@@ -1,11 +1,9 @@
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
+import { useQuery } from '@tanstack/react-query';
+import { ChevronDownIcon, Trash } from 'lucide-react';
 import React from 'react';
-
 import { getLibrary, removeFromLibrary } from '../api/podcast';
 import { type LibraryItem } from '../types/spotify-api';
-import { useQuery } from '@tanstack/react-query';
-
-import { ChevronDownIcon, Trash } from 'lucide-react';
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 
 const PodcastLibraryGrid: React.FC = () => {
     const libraryQuery = useQuery({
@@ -29,14 +27,7 @@ const PodcastLibraryGrid: React.FC = () => {
         return <p className="text-red-500">Error loading library</p>;
     }
 
-    return (
-        // <div className="flex flex-col items-center justify-start gap-2 w-full h-full overflow-x-auto">
-        //     {libraryQuery.data?.map(item => (
-        //         <PodcastListCard key={item.podcast_id} item={item} onDelete={handleDelete} />
-        //     ))}
-        // </div>
-        <PodcastListFolder items={libraryQuery.data || []} onItemDelete={handleDelete} />
-    );
+    return <PodcastListFolder items={libraryQuery.data || []} onItemDelete={handleDelete} />;
 };
 
 interface PodcastListFolderProps {
@@ -55,7 +46,7 @@ export const PodcastListFolder = (props: PodcastListFolderProps) => {
     }, new Map<string, LibraryItem[]>());
 
     return (
-        <div className="h-full w-full rounded-md border border-white/60 px-2">
+        <div className="w-full rounded-md border border-white/60 px-2">
             {Array.from(items.entries()).map(([libraryName, items], idx) => (
                 <Disclosure
                     key={libraryName}
