@@ -1,5 +1,4 @@
 import { useAtomValue } from '@zedux/react';
-import './App.css';
 import TabNavigation from './components/tab-navigation';
 
 import { useEffect } from 'react';

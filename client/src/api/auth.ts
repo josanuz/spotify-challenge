@@ -1,5 +1,6 @@
 import axios from 'axios';
 import api from './axios-clent';
+import { jwtDecode } from 'jwt-decode';
 
 export type TokenResponse = {
     token?: string;
@@ -7,17 +8,20 @@ export type TokenResponse = {
     error?: string;
 };
 
+// utility function to check if a token is quasi-expired
+export const isTokenAboutToExpire = (token: string | null): boolean => {
+    if (!token) return false;
+    const { exp } = jwtDecode<{ exp: number }>(token);
+    const now = Math.floor(Date.now() / 1000);
+    return exp - now < 60; // 60 seconds before expiration
+};
+
 export const getToken = async (accessToken: string): Promise<TokenResponse> => {
-    return fetch('/auth/code-begin', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code: accessToken }),
-    })
-        .then(async response => {
-            if (response.ok) {
-                return (await response.json()) as TokenResponse;
+    return axios
+        .post('/auth/code-begin', { code: accessToken })
+        .then(response => {
+            if (response.status === 200) {
+                return response.data as TokenResponse;
             } else {
                 return { error: `Authentication failed ${response.statusText}` };
             }

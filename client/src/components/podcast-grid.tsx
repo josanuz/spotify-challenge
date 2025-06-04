@@ -1,20 +1,19 @@
-import { Plus, View } from 'lucide-react';
+import { Check, Plus, View } from 'lucide-react';
 import type { SpotifyPodcast } from '../types/spotify-api';
 import { use, useEffect, useRef } from 'react';
+import type { LibraryItem } from '../api/podcast';
 
 type Props = {
     podcasts: SpotifyPodcast[];
+    library: LibraryItem[];
     onAdd?: (podcast: SpotifyPodcast) => void;
     onView?: (podcast: SpotifyPodcast) => void;
 };
 
-export default function PodcastGrid({ podcasts, onAdd, onView }: Props) {
-
+export default function PodcastGrid({ podcasts, onAdd, onView, library }: Props) {
     const scrollElement = useRef<HTMLDivElement>(null);
 
-    useEffect(() => { 
-        
-    });
+    useEffect(() => {});
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
@@ -22,7 +21,7 @@ export default function PodcastGrid({ podcasts, onAdd, onView }: Props) {
                 <div
                     key={podcast.id}
                     className="relative bg-white rounded-xl shadow-lg overflow-hidden transition hover:shadow-xl hover:scale-105"
-                >                    
+                >
                     <img
                         src={podcast.images[0]?.url}
                         alt={podcast.name}
@@ -34,15 +33,22 @@ export default function PodcastGrid({ podcasts, onAdd, onView }: Props) {
                         aria-label={`View ${podcast.name}`}
                     >
                         <View size={20} />
-                    </button>                    
-                    <button
-                        onClick={() => onAdd?.(podcast)}
-                        className="absolute top-2 right-2 bg-green-600 hover:bg-green-700 text-white rounded-full p-2 shadow-md transition"
-                        aria-label={`Add ${podcast.name}`}
-                    >
-                        <Plus size={20} />
                     </button>
-                    
+                    {/* If the items is in library, show a blue check otherwise check add button */}
+                    {library.some(item => item.podcast_id === podcast.id) ? (
+                        <span className="absolute top-2 right-2 bg-blue-600 text-white rounded-full p-2 shadow-md">
+                            <Check size={20} />
+                        </span>
+                    ) : (
+                        <button
+                            onClick={() => onAdd?.(podcast)}
+                            className="absolute top-2 right-2 bg-green-600 hover:bg-green-700 text-white rounded-full p-2 shadow-md transition"
+                            aria-label={`Add ${podcast.name}`}
+                        >
+                            <Plus size={20} />
+                        </button>
+                    )}
+
                     <div className="p-4">
                         <h2 className="text-lg font-semibold text-gray-900 line-clamp-1">
                             {podcast.name}

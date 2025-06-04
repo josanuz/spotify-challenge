@@ -1,9 +1,8 @@
-import axios from 'axios';
 import type { SpotifyAudiobook, SpotifyPodcast, SpotifySearchResult } from '../types/spotify-api';
+import api from './axios-clent';
 
 export interface SearchParams {
     query: string;
-    token: string;
     page?: number;
     pageSize?: number;
 }
@@ -11,19 +10,15 @@ export interface SearchParams {
 export async function searchAudioBooks(
     params: SearchParams,
 ): Promise<SpotifySearchResult<SpotifyAudiobook>> {
-    const response = await axios.get('/api/search/audiobooks', {
-        params,
-        headers: { Authorization: `Bearer ${params.token}` },
-    });
+    const response = await api.get('/api/search/audiobooks', { params });
     return response.data;
 }
 
 export async function searchPodcasts(
     params: SearchParams,
 ): Promise<SpotifySearchResult<SpotifyPodcast>> {
-    const response = await axios.get<SpotifySearchResult<SpotifyPodcast>>('/api/search/podcasts', {
+    const response = await api.get<SpotifySearchResult<SpotifyPodcast>>('/api/search/podcasts', {
         params,
-        headers: { Authorization: `Bearer ${params.token}` },
     });
     return response.data;
 }

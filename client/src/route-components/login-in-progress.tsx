@@ -1,14 +1,12 @@
 import { useEffect, useMemo } from 'react';
-import { Navigate, useNavigate, useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { getToken } from '../api/auth';
-import { useAtomState, useAtomValue } from '@zedux/react';
 import { useQuery } from '@tanstack/react-query';
-import { authenticationAtom, authenticationStore, setAuthentication } from '../main';
+import { authenticationStore, setAuthentication } from '../main';
 
 export const LoginInProgress = () => {
     const navigate = useNavigate();
     const [urlSearchParams] = useSearchParams();
-    const { token: jwt } = useAtomValue(authenticationAtom);
     const code = useMemo(() => urlSearchParams.get('code'), [urlSearchParams]); // Memoize the code extraction to avoid unnecessary re-renders
 
     const tokenQuery = useQuery({
@@ -23,7 +21,7 @@ export const LoginInProgress = () => {
         if (tokenQuery.isSuccess) {
             const response = tokenQuery.data;
             if (response.token) {
-                authenticationStore.dispatch(setAuthentication(response.token));                
+                authenticationStore.dispatch(setAuthentication(response.token));
                 localStorage.setItem('jwtToken', response.token);
                 navigate('/', { replace: true });
             } else {
@@ -32,7 +30,7 @@ export const LoginInProgress = () => {
                 });
             }
         }
-    }, [tokenQuery.isSuccess, tokenQuery.data]);
+    }, [tokenQuery.isSuccess, tokenQuery.data, navigate]);
 
     return (
         <div className="flex items-center justify-center h-screen flex-col text-center">

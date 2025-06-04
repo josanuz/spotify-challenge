@@ -1,15 +1,6 @@
 import type { UserProfile } from '../types/user-profile';
+import api from './axios-clent';
 
-export const fetchUserProfile = async (accessToken: string): Promise<UserProfile> => {
-    const response = await fetch('/api/user/whoami', {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
-
-    if (!response.ok) {
-        throw new Error(`Error fetching user profile: ${response.statusText}`);
-    }
-
-    return response.json() as Promise<UserProfile>;
+export const fetchUserProfile = async (): Promise<UserProfile> => {
+    return await api.get('/api/user/whoami').then(response => response.data as UserProfile);
 };

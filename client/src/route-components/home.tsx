@@ -1,5 +1,5 @@
 import { useAtomValue } from '@zedux/react';
-import { authenticationAtom, userProfileAtom } from '../main';
+import { userProfileAtom } from '../main';
 import { Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { searchPodcasts } from '../api/search';
@@ -7,20 +7,41 @@ import { Outlet, useNavigate, useSearchParams } from 'react-router';
 import PodcastGrid from '../components/podcast-grid';
 import { clsx } from 'clsx';
 import { SearchBar } from '../components/search-bar';
-import { addToLibrary } from '../api/podcast';
+import { addToLibrary, getLibrary } from '../api/podcast';
 
 export const Home = () => {
     const loggedUser = useAtomValue(userProfileAtom);
     const navigate = useNavigate();
-    const { token } = useAtomValue(authenticationAtom);
     const [searchParams, setSearchParams] = useSearchParams();
+
+    const currentLibraryQuery = useQuery({
+        queryKey: ['library'],
+        queryFn: () => getLibrary(),
+        enabled: !!loggedUser,
+    });
 
     const audioBookQuery = useQuery({
         queryKey: ['search', searchParams.get('query')],
-        queryFn: () => searchPodcasts({ query: searchParams.get('query') || '', token: token! }),
+        queryFn: () => searchPodcasts({ query: searchParams.get('query') || '' }),
         enabled: !!searchParams.get('query'), // Only run the query if query is not empty
         refetchOnWindowFocus: false,
     });
+
+    if (currentLibraryQuery.isLoading || audioBookQuery.isLoading) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <p className="text-center text-xl">Loading...</p>
+            </div>
+        );
+    }
+
+    if (currentLibraryQuery.isError || audioBookQuery.isError) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <p className="text-red-500">Error loading data</p>
+            </div>
+        );
+    }
 
     return (
         <Suspense fallback={<p className="text-center text-xl">Loading user profile...</p>}>
@@ -39,17 +60,15 @@ export const Home = () => {
                         id="search-results"
                         className={`overflow-auto shrink grow basis-0 ${clsx(audioBookQuery.isLoading || audioBookQuery.isError ? 'flex items-center justify-center' : 'inline-block')}`}
                     >
-                        {audioBookQuery.isLoading ? (
-                            <p className="text-center text-xl">Loading search results...</p>
-                        ) : audioBookQuery.isError ? (
-                            <p className="text-red-500">Error loading search results</p>
-                        ) : (
+                        {audioBookQuery.isSuccess && (
                             <PodcastGrid
+                                library={currentLibraryQuery.data ?? []}
                                 podcasts={audioBookQuery.data?.items ?? []}
                                 onAdd={podcast => {
-                                    addToLibrary(token!, podcast.id).then(() =>
-                                        audioBookQuery.refetch(),
-                                    );
+                                    addToLibrary(podcast.id).then(() => {
+                                        currentLibraryQuery.refetch();
+                                        audioBookQuery.refetch();
+                                    });
                                 }}
                                 onView={podcast =>
                                     navigate(`./${podcast.id}/?${searchParams.toString()}`, {

@@ -20,14 +20,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fetchUserProfile } from './api/user.ts';
 import PodcastDialog from './route-components/detailed-view-dialog.tsx';
 import PodcastLibraryGrid from './route-components/library-view.tsx';
-import { refreshToken } from './api/auth.ts';
+import { isTokenAboutToExpire, refreshToken } from './api/auth.ts';
 
 export const setAuthentication = actionFactory<string>('setAuthentication');
+export const removeAuthentication = actionFactory('removeAuthentication');
 
-const reducer = createReducer({ token: localStorage.getItem('jwtToken') || null }).reduce(
-    setAuthentication,
-    (_, token) => ({ token }),
-);
+const reducer = createReducer({ token: localStorage.getItem('jwtToken') || null })
+    .reduce(setAuthentication, (_, token) => ({ token }))
+    .reduce(removeAuthentication, () => ({ token: null }));
+
 export const authenticationStore = createStore(reducer);
 
 authenticationStore.subscribe(() => {
@@ -40,18 +41,30 @@ authenticationStore.subscribe(() => {
 });
 
 export const authenticationAtom = atom('authentication', () => {
-    const authStore = authenticationStore;
+    const authStore = injectStore(() => authenticationStore);
+    const { token } = authStore.getState();
 
     injectEffect(() => {
-        console.log('Authentication store initialized with token:', authStore.getState().token);
+        console.log('Authentication store initialized with token:', token);
         if (authStore.getState().token) {
-            setTimeout(() => {
-                refreshToken().then(newToken => {
-                    console.log('Token refreshed:', newToken);
-                }).catch(error => { console.error('Error refreshing token:', error); });
-            }, 30000);
+            const intervalId = setInterval(() => {
+                if (isTokenAboutToExpire(token)) {
+                    refreshToken()
+                        .then(newToken => {
+                            if (newToken.token) {
+                                authStore.dispatch(setAuthentication(newToken.token));
+                            } else {
+                                authStore.dispatch(removeAuthentication());
+                            }
+                        })
+                        .catch(() => {
+                            authStore.dispatch(removeAuthentication());
+                        });
+                }
+            }, 30000); // Check every 30 seconds
+            return () => clearInterval(intervalId);
         }
-    }, [authStore.getState().token]);
+    }, [token]);
 
     return authStore;
 });
@@ -62,7 +75,7 @@ export const authenticationAtom = atom('authentication', () => {
 export const userProfileAtom = atom('userProfile', () => {
     const { token } = injectAtomValue(authenticationAtom);
     const currentUserApi = injectPromise(
-        () => (token != null ? fetchUserProfile(token) : Promise.resolve(null)),
+        () => (token != null ? fetchUserProfile() : Promise.resolve(null)),
         [token],
         { dataOnly: true, subscribe: false },
     );
