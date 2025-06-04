@@ -1,8 +1,20 @@
+/**
+ * React component to display a grid of podcasts with options to add or view details.
+ * It shows a list of podcasts with their cover images, titles, publishers, and descriptions.
+ * Users can add podcasts to their library or view more details about them.
+ * If a podcast is already in the user's library, it shows a checkmark instead of the add button.
+ */
 import { Check, Plus, View } from 'lucide-react';
 import type { SpotifyPodcast } from '../types/spotify-api';
-import { use, useEffect, useRef } from 'react';
-import type { LibraryItem } from '../api/podcast';
+import type { LibraryItem } from '../types/spotify-api';
 
+/**
+ * Props interface for the PodcastGrid component.
+ * @property podcasts - An array of SpotifyPodcast objects to display.
+ * @property library - An array of LibraryItem objects representing the user's podcast library.
+ * @property onAdd - Optional callback function to handle adding a podcast to the library.
+ * @property onView - Optional callback function to handle viewing podcast details.
+ */
 type Props = {
     podcasts: SpotifyPodcast[];
     library: LibraryItem[];
@@ -11,10 +23,6 @@ type Props = {
 };
 
 export default function PodcastGrid({ podcasts, onAdd, onView, library }: Props) {
-    const scrollElement = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {});
-
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
             {podcasts.map(podcast => (

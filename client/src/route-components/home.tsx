@@ -1,5 +1,5 @@
 import { useAtomValue } from '@zedux/react';
-import { userProfileAtom } from '../main';
+import { userProfileAtom } from '../state/app-state';
 import { Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { searchPodcasts } from '../api/search';
@@ -27,14 +27,6 @@ export const Home = () => {
         refetchOnWindowFocus: false,
     });
 
-    if (currentLibraryQuery.isLoading || audioBookQuery.isLoading) {
-        return (
-            <div className="flex items-center justify-center h-full">
-                <p className="text-center text-xl">Loading...</p>
-            </div>
-        );
-    }
-
     if (currentLibraryQuery.isError || audioBookQuery.isError) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -54,12 +46,20 @@ export const Home = () => {
                         id="search-section"
                         className="flex flex-row items-center justify-center w-full"
                     >
-                        <SearchBar onsubmit={query => setSearchParams({ query })} />
+                        <SearchBar
+                            onsubmit={query => setSearchParams({ query })}
+                            current={searchParams.get('query')}
+                        />
                     </section>
                     <section
                         id="search-results"
                         className={`overflow-auto shrink grow basis-0 ${clsx(audioBookQuery.isLoading || audioBookQuery.isError ? 'flex items-center justify-center' : 'inline-block')}`}
                     >
+                        {(currentLibraryQuery.isLoading || audioBookQuery.isLoading) && (
+                            <div className="flex items-center justify-center h-full">
+                                <p className="text-white">Loading</p>
+                            </div>
+                        )}
                         {audioBookQuery.isSuccess && (
                             <PodcastGrid
                                 library={currentLibraryQuery.data ?? []}
@@ -84,4 +84,4 @@ export const Home = () => {
         </Suspense>
     );
 };
-7;
+;

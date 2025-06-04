@@ -1,26 +1,23 @@
-import type { SpotifyPodcast } from '../types/spotify-api';
+/**
+ *  This file contains functions to interact with the podcast API.
+ *  It includes functions to get podcast details, manage the library, and add or remove podcasts from the library.
+ */
+import type { LibraryItem, SpotifyPodcast } from '../types/spotify-api';
 import api from './axios-clent';
 
-// TODO move to a location where it makes more sense
-
-export interface SpotifyShow {
-    name: string;
-    publisher: string;
-    images: { url: string }[];
-    external_urls: { spotify: string };
-}
-
-export interface LibraryItem {
-    user_id: number;
-    library_name: string;
-    podcast_id: string;
-    podcast_info?: SpotifyShow;
-}
-
+/**
+ * Fetches a podcast by its ID.
+ * @param podcastId - The ID of the podcast to fetch.
+ * @returns A promise that resolves to the SpotifyPodcast object.
+ */
 export const getPodcast = async (podcastId: string): Promise<SpotifyPodcast> => {
     return await api.get(`/api/podcast/${podcastId}`).then(res => res.data as SpotifyPodcast);
 };
 
+/**
+ * Fetches the user's podcast library.
+ * @returns A promise that resolves to an array of LibraryItem objects representing the user's podcast library.
+ */
 export const getLibrary = async (): Promise<LibraryItem[]> => {
     return await api
         .get('/api/lib/podcast')
@@ -30,6 +27,11 @@ export const getLibrary = async (): Promise<LibraryItem[]> => {
         });
 };
 
+/**
+ * Removes a podcast from the user's library.
+ * @param podcastId - The ID of the podcast to remove from the library.
+ * @returns  A promise that resolves to an object indicating success or failure.
+ */
 export const removeFromLibrary = async (
     podcastId: string,
 ): Promise<{ success: boolean; error?: string }> => {
@@ -40,6 +42,11 @@ export const removeFromLibrary = async (
         .catch(error => ({ success: false, error: error.message }));
 };
 
+/**
+ * Adds a podcast to the user's library.
+ * @param podcastId - The ID of the podcast to add to the library.
+ * @returns A promise that resolves to an object indicating success or failure.
+ */
 export const addToLibrary = async (
     podcastId: string,
 ): Promise<{ success: boolean; error?: string }> => {

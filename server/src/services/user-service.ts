@@ -65,4 +65,3 @@ export const loadUserProfile = async (accessToken: string): Promise<SpotifyUserP
 
     return response.data;
 };
-

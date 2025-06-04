@@ -1,90 +1,24 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import './index.css';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import App from './App.tsx';
-import { LoginInSpotify } from './route-components/log-in-spotify.tsx';
-import { Home } from './route-components/home.tsx';
-import {
-    atom,
-    injectAtomValue,
-    injectPromise,
-    createStore,
-    injectStore,
-    actionFactory,
-    createReducer,
-    injectEffect,
-} from '@zedux/react';
-import { LoginInProgress } from './route-components/login-in-progress.tsx';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fetchUserProfile } from './api/user.ts';
+import './index.css';
 import PodcastDialog from './route-components/detailed-view-dialog.tsx';
+import { Home } from './route-components/home.tsx';
 import PodcastLibraryGrid from './route-components/library-view.tsx';
-import { isTokenAboutToExpire, refreshToken } from './api/auth.ts';
-
-export const setAuthentication = actionFactory<string>('setAuthentication');
-export const removeAuthentication = actionFactory('removeAuthentication');
-
-const reducer = createReducer({ token: localStorage.getItem('jwtToken') || null })
-    .reduce(setAuthentication, (_, token) => ({ token }))
-    .reduce(removeAuthentication, () => ({ token: null }));
-
-export const authenticationStore = createStore(reducer);
-
-authenticationStore.subscribe(() => {
-    const state = authenticationStore.getState();
-    if (state.token) {
-        localStorage.setItem('jwtToken', state.token);
-    } else {
-        localStorage.removeItem('jwtToken');
-    }
-});
-
-export const authenticationAtom = atom('authentication', () => {
-    const authStore = injectStore(() => authenticationStore);
-    const { token } = authStore.getState();
-
-    injectEffect(() => {
-        console.log('Authentication store initialized with token:', token);
-        if (authStore.getState().token) {
-            const intervalId = setInterval(() => {
-                if (isTokenAboutToExpire(token)) {
-                    refreshToken()
-                        .then(newToken => {
-                            if (newToken.token) {
-                                authStore.dispatch(setAuthentication(newToken.token));
-                            } else {
-                                authStore.dispatch(removeAuthentication());
-                            }
-                        })
-                        .catch(() => {
-                            authStore.dispatch(removeAuthentication());
-                        });
-                }
-            }, 30000); // Check every 30 seconds
-            return () => clearInterval(intervalId);
-        }
-    }, [token]);
-
-    return authStore;
-});
-
-// export const jwtTokenAtom = atom('jwtToken', () => localStorage.getItem('jwtToken'));
-// export const currentUserAtom = atom<UserProfile | null>('currentUser', null);
-
-export const userProfileAtom = atom('userProfile', () => {
-    const { token } = injectAtomValue(authenticationAtom);
-    const currentUserApi = injectPromise(
-        () => (token != null ? fetchUserProfile() : Promise.resolve(null)),
-        [token],
-        { dataOnly: true, subscribe: false },
-    );
-
-    return currentUserApi;
-});
+import { LoginInSpotify } from './route-components/log-in-spotify.tsx';
+import { LoginInProgress } from './route-components/login-in-progress.tsx';
 
 const querClient = new QueryClient();
 
+/**
+ * Creates the root of the React application and renders the main component.
+ * It sets up the React Router for navigation and the QueryClientProvider for data fetching.
+ * The application includes routes for the home page, library, login page, and a fallback for 404 errors.
+ * The main application component is wrapped in a StrictMode to help identify potential problems in the application.
+ * The QueryClientProvider is used to provide the query client to the entire application, enabling data fetching capabilities.
+ */
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <QueryClientProvider client={querClient}>

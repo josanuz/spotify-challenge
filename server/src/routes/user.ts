@@ -22,7 +22,7 @@ router.get('/whoami', (req, res, next) => {
             });
     } catch (error: any) {
         console.error('Error in /whoami:', error);
-        res.status(400).send("Malformed request: " + error?.message || 'Unknown error');
+        res.status(400).send('Malformed request: ' + error?.message || 'Unknown error');
     }
 });
 

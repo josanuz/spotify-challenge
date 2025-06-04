@@ -1,6 +1,14 @@
+/*
+    this file contains the tab navigation component for the application.
+    It includes a top navigation bar for larger screens and a bottom navigation bar for smaller screens.
+    The navigation links are dynamically generated based on the defined tabs.
+*/
 import { NavLink, Outlet } from 'react-router'
 import { Home, BookOpen } from 'lucide-react'
 
+/**
+ * Default tabs for the navigation.
+ */
 const tabs = [
     { to: 'home', label: 'Home', icon: <Home size={20} /> },
     { to: 'library', label: 'Library', icon: <BookOpen size={20} /> }

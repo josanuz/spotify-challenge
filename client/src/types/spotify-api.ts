@@ -1,17 +1,18 @@
-// This file is duplicated in the server/src/types/spotify-api.ts file. Gotta move this to a shared location.
+// this provides sevreal TypeScript interfaces for the Spotify API, including search results, podcast details, audiobook details, user profiles, and more.
+// for further details, refer to the Spotify API documentation.
+
+// https://developer.spotify.com/documentation/web-api/reference/
 export interface SpotifySearchResult<T> {
-  href: string
-  limit: number
-  next: string
-  offset: number
-  previous: any
-  total: number
-  items: T[]
+    href: string;
+    limit: number;
+    next: string;
+    offset: number;
+    total: number;
+    items: T[];
 }
 
 export interface SpotifyPodcast {
     available_markets: string[];
-    copyrights: any[];
     description: string;
     html_description: string;
     explicit: boolean;
@@ -39,8 +40,6 @@ export interface SpotifyAudiobook {
     images: Array<{ url: string; height: number; width: number }>;
     release_date: string;
 }
-
-
 
 export interface SpotifyTokenResponse {
     access_token: string;
@@ -72,4 +71,33 @@ export interface Image {
     url: string;
     height: number;
     width: number;
+}
+export interface SpotifyShow {
+    name: string;
+    publisher: string;
+    images: { url: string }[];
+    external_urls: { spotify: string };
+}
+export interface LibraryItem {
+    user_id: number;
+    library_name: string;
+    podcast_id: string;
+    podcast_info?: SpotifyShow;
+} // Interface representing a user profile in spotify API
+export interface UserProfile {
+    country: string;
+    display_name: string;
+    email: string;
+    explicit_content: {
+        filter_enabled: boolean;
+        filter_locked: boolean;
+    };
+    external_urls: { spotify: string };
+    followers: { href: string; total: number };
+    href: string;
+    id: string;
+    images: Image[];
+    product: string;
+    type: string;
+    uri: string;
 }
