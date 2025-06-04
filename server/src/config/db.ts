@@ -1,3 +1,8 @@
+/**
+ * This file reads database configuration from environment variables
+ * and provides a default configuration for connecting to a PostgreSQL database.
+ */
+
 export const DataBaseConfig = {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432', 10),

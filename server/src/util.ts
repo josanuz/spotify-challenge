@@ -10,6 +10,11 @@ export const isOkCode = (status: number): boolean => {
     return status >= 200 && status < 300;
 };
 
+/**
+ * extracts the spotify token from the JWT claims
+ * @param req Express request object
+ * @returns the spotify token stored in the JWT claims
+ */
 export const extracSpotifyTokenFromRequest = (req: Request): string => {
     const token =
         extractTokenFromHeader(req.headers.authorization) || extractTokenFromCookie(req.cookies);

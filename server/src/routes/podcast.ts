@@ -1,11 +1,14 @@
+// this file deals with fetching podcasts from Spotify
 import { Router } from 'express';
 import { extracSpotifyTokenFromRequest } from '../util';
 import { getPodcast } from '../services/spotify-search-service';
-import { addToLibrary, removeFromLibrary } from '../services/podcast-service';
-import { loadUserProfile, searchLocalUserByExtrenalId } from '../services/user-service';
 
 const router = Router();
 
+/**
+ * Fetches a podcast by its ID.
+ * @param {string} id - The ID of the podcast to fetch.
+ */
 router.get('/:id', (req, res) => {
     try {
         const spotifyToken = extracSpotifyTokenFromRequest(req);

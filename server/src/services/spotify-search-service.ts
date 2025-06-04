@@ -1,3 +1,4 @@
+// This file deals with audiobooks and podcast from the Spotify API
 import axios from 'axios';
 import {
     SpotifyAudiobook,
@@ -33,6 +34,16 @@ async function SearchSpotify(
     };
 }
 
+
+/**
+ * Searches for audiobooks on Spotify using the provided access token and query.
+ *
+ * @param accessToken - The Spotify access token used for authentication.
+ * @param query - The search query string to find audiobooks.
+ * @param limit - (Optional) The maximum number of results to return. Defaults to 20.
+ * @param offset - (Optional) The index of the first result to return. Defaults to 0.
+ * @returns A promise that resolves to a `SpotifyAudiobookSearchResult` containing the search results.
+ */
 export async function searchAudiobooks(
     accessToken: string,
     query: string,
@@ -43,7 +54,12 @@ export async function searchAudiobooks(
         data => data.audiobooks,
     );
 }
-
+/**
+ * Fetches details for a specific audiobook
+ * @param accessToken Spotify accestoken
+ * @param audiobookId Id for the audiobook
+ * @returns 
+ */
 export async function getAudiobook(accessToken: string, audiobookId: string) {
     const response = await axios.get(`${SPOTIFY_API_BASE}/audiobooks/${audiobookId}`, {
         headers: {
@@ -53,24 +69,14 @@ export async function getAudiobook(accessToken: string, audiobookId: string) {
     return response.data as SpotifyAudiobook;
 }
 
-export async function getAudiobookChapters(
-    accessToken: string,
-    audiobookId: string,
-    limit: number = 20,
-    offset: number = 0,
-) {
-    const response = await axios.get(`${SPOTIFY_API_BASE}/audiobooks/${audiobookId}/chapters`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`,
-        },
-        params: {
-            limit,
-            offset,
-        },
-    });
-    return response.data.chapters;
-}
-
+/**
+ * 
+ * @param accessToken Spotify access token
+ * @param query Query to pass down to the API
+ * @param limit max amount of results
+ * @param offset results starting from this point
+ * @returns a Promise that resolves to SpotifyPodcastResult
+ */
 export function searchPodcasts(
     accessToken: string,
     query: string,

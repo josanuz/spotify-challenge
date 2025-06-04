@@ -1,6 +1,6 @@
+// classes related to spotify requests and responses, see spotify developer docs for more info
 export interface SpotifyPodcastResult {
     available_markets: string[];
-    copyrights: any[];
     description: string;
     html_description: string;
     explicit: boolean;

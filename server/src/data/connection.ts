@@ -1,9 +1,12 @@
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
 import { DataBaseConfig } from '../config/db';
 
 const pool = new Pool(DataBaseConfig);
-
-export const getConnection = async () => {
+/**
+ * Creates a connection pool to the PostgreSQL database using the configuration provided.
+ * @returns {Promise<PoolClient>} A promise that resolves to a PostgreSQL client.
+ */
+export const getConnection = async (): Promise<PoolClient> => {
     try {
         const client = await pool.connect();
         return client;

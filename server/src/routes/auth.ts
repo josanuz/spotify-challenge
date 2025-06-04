@@ -1,32 +1,35 @@
+/* 
+    this file deals with the authentication flow for Spotify
+    it handles the login, callback, and token refresh processes.
+    It uses the Spotify API to authenticate users and manage their tokens.
+*/
 import axios, { AxiosRequestConfig } from 'axios';
-import { Router, Request, Response } from 'express';
+import { Request, Response, Router } from 'express';
+import { console } from 'inspector';
 import queryString from 'query-string';
 import { v4 } from 'uuid';
 import Environment from '../config/enviroment';
-import {
-    extractTokenFromCookie,
-    extractTokenFromHeader,
-    generateToken,
-    verifyToken,
-} from '../services/authentication-service';
+import { generateToken } from '../services/authentication-service';
 import {
     createLocalUser,
     loadUserProfile,
     searchLocalUserByExtrenalId,
     updateLocalUserRefreshToken,
 } from '../services/user-service';
-import { extracSpotifyTokenFromRequest, isOkCode } from '../util';
 import { SpotifyTokenResponse } from '../types/spotify-api';
-import { console } from 'inspector';
-
-// const queryString = await import('query-string').then(module => module.default);
+import { extracSpotifyTokenFromRequest, isOkCode } from '../util';
 
 const { CLIENT_ID, REDIRECT_URI, CLIENT_SECRET } = Environment;
 const authorizationUrl = 'https://accounts.spotify.com/authorize?';
 const tokenUrl = 'https://accounts.spotify.com/api/token';
 
 const router = Router();
-
+/**
+ * This route initiates the Spotify login process.
+ * It redirects the user to the Spotify authorization page.
+ * The user will be asked to log in and authorize the application.
+ * After authorization, Spotify will redirect the user back to the specified redirect URI with a code.
+ */
 router.get('/login', function (req, res) {
     const state = v4().substring(0, 16);
     const scope = 'user-read-private user-read-email';
@@ -43,6 +46,10 @@ router.get('/login', function (req, res) {
     );
 });
 
+/**
+ * this route exchanges the authorization code for an access token.
+ * It is called after the user has authorized the application and Spotify has redirected back to the application with a code.
+ */
 router.post('/code-begin', function (req, res) {
     const { code } = req.body;
     if (!code) {
@@ -110,6 +117,12 @@ router.post('/code-begin', function (req, res) {
         });
 });
 
+/**
+ * This route handles the callback from Spotify after the user has authorized the application.
+ * It retrieves the authorization code and state from the query parameters.
+ * If the code and state are valid, it redirects the user to a landing page with the code.
+ * If not, it redirects back to the previous page with an error message.
+ */
 router.get('/callback', function (req, res) {
     const code = req.query.code || null;
     const state = req.query.state || null;
@@ -136,6 +149,11 @@ router.get('/callback', function (req, res) {
     );
 });
 
+/**
+ * This route refreshes the Spotify access token using the refresh token stored in the local user database.
+ * It retrieves the user's Spotify profile, checks if the user exists in the local database,
+ * and then uses the refresh token to obtain a new access token from Spotify.
+ */
 router.post('/refresh-token', async (req: Request, res: Response) => {
     try {
         const spotifyToken = extracSpotifyTokenFromRequest(req);

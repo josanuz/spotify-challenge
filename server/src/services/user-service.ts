@@ -1,3 +1,4 @@
+// Provides service functions to deal with local users
 import axios from 'axios';
 import { getConnection } from '../data/connection';
 import { LocalUser } from '../types/local-user';
@@ -5,6 +6,11 @@ import { isOkCode } from '../util';
 import { SpotifyUserProfile } from '../types/spotify-api';
 import { AppError, UnauthorizedError } from '../types/error';
 
+/**
+ * Searchs for a local user that matches a given spotify id
+ * @param spotifyId the spotify id to search for
+ * @returns a promise that resolves to the local user information
+ */
 export const searchLocalUserByExtrenalId = async (spotifyId: string): Promise<LocalUser | null> => {
     const connection = await getConnection();
 
@@ -17,6 +23,12 @@ export const searchLocalUserByExtrenalId = async (spotifyId: string): Promise<Lo
     return null;
 };
 
+/**
+ * Creates a new local user using the info provided by Spotify
+ * @param user The Spotify user to use as base
+ * @param refreshToken the spotify refresh token
+ * @returns the newly created spotify user
+ */
 export const createLocalUser = async (
     user: SpotifyUserProfile,
     refreshToken: string,
@@ -33,6 +45,12 @@ export const createLocalUser = async (
     return result.rows[0] as LocalUser;
 };
 
+/**
+ * When there is a new refresh token, updates it
+ * @param spotify_id the id to search for
+ * @param refreshToken the new token
+ * @returns the local user with the updated fields
+ */
 export const updateLocalUserRefreshToken = async (
     spotify_id: string,
     refreshToken: string,
@@ -48,6 +66,11 @@ export const updateLocalUserRefreshToken = async (
     return result.rows.length > 0 ? (result.rows[0] as LocalUser) : null;
 };
 
+/**
+ * Loads an user from Spotify
+ * @param accessToken acess token to authenticate
+ * @returns a promise that resolves to the spotify user
+ */
 export const loadUserProfile = async (accessToken: string): Promise<SpotifyUserProfile> => {
     const response = await axios
         .get<SpotifyUserProfile>('https://api.spotify.com/v1/me', {
