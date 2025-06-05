@@ -82,7 +82,7 @@ export default function TabNavigation() {
             </nav>
 
             {/* Page Content */}
-            <div className="grow shrink p-4 w-full">
+            <div className="grow shrink p-4 w-full overflow-auto">
                 <Outlet />
             </div>
 

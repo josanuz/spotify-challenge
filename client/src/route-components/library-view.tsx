@@ -52,7 +52,7 @@ export const PodcastListFolder = (props: PodcastListFolderProps) => {
 
     return (
         <div
-            className={`w-full rounded-md border border-white/60 px-2 ${clsx(props.isLoading && 'h-[80%]')}`}
+            className={`w-full max-h-11/12 overflow-auto rounded-md border border-white/60 px-2 ${clsx(props.isLoading && 'h-[80%]')}`}
         >
             {props.isLoading && data.length == 0 && (
                 <div className="w-full h-full flex items-center justify-center">
