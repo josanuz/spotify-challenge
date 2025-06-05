@@ -1,31 +1,49 @@
-version: '3.8'
+version: "3.8"
+
 services:
-  db:
-    image: postgres:15
+  podcast-app-db:
+    image: postgres:14
+    container_name: podcast-app-db
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: audiobooks
+      POSTGRES_USER: podcast_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: podcast
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./schema/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     ports:
       - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
 
-  server:
+  podcast-app-server:
     build:
       context: ./server
-    ports:
-      - "5000:5000"
+      dockerfile: Dockerfile
+    container_name: podcast-app-server
     depends_on:
-      - db
+      - podcast-app-db
+    environment:
+      PORT: "5545"
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+      REDIRECT_URI: ${REDIRECT_URI}
+      DB_HOST: podcast-app-db
+      DB_PORT: "5432"
+      DB_USER: podcast_user
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: podcast
+    ports:
+      - "5545:5545"
+    # command: sh -c "export MODE=production && npm run build && npm run start"
 
-  client:
+  static-server:
     build:
       context: ./client
+      dockerfile: Dockerfile
+    container_name: myapp-static-server
     ports:
-      - "3000:3000"
-    depends_on:
-      - server
+      - "8080:8080"
 
 volumes:
-  pgdata:
+  db_data:
+  client_build:

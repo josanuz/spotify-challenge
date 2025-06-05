@@ -36,6 +36,9 @@ export const getPersonalLibrary = async (userId: number, spotifyToken: string) =
             throw new InternalServerError('Database connection error', err);
         });
     // fetch podcast details from Spotify
+    if (!data || data.length < 1) {
+        return [];
+    }
     const ids = data.map(item => item.podcast_id).join(',');
     const podcastDetails = await fetch(`https://api.spotify.com/v1/shows?ids=${ids}`, {
         headers: {
@@ -60,10 +63,10 @@ export const getPersonalLibrary = async (userId: number, spotifyToken: string) =
 };
 
 /**
- * 
+ *
  * @param userId the ID of the user adding the podcast to their library
- * @param podcastId the ID of the podcast to be added 
- * @param libraryName name for the library where the podcast is being added to 
+ * @param podcastId the ID of the podcast to be added
+ * @param libraryName name for the library where the podcast is being added to
  * @returns true if the podcas was added
  */
 export const addToLibrary = async (userId: number, podcastId: string, libraryName: string) => {
@@ -82,10 +85,10 @@ export const addToLibrary = async (userId: number, podcastId: string, libraryNam
 };
 
 /**
- * 
+ *
  * @param userId the ID of the user adding the podcast to their library
- * @param podcastId the ID of the podcast to be added 
- * @param libraryName name for the library where the podcast is being added to 
+ * @param podcastId the ID of the podcast to be added
+ * @param libraryName name for the library where the podcast is being added to
  * @returns true if the podcas was removed
  */
 export const removeFromLibrary = async (userId: number, podcastId: string, libraryName: string) => {
