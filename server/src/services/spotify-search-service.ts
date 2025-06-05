@@ -1,11 +1,11 @@
 // This file deals with audiobooks and podcast from the Spotify API
 import axios from 'axios';
+import { UnauthorizedError } from '../types/error';
 import {
     SpotifyAudiobook,
     SpotifyAudiobookSearchResult,
     SpotifyPodcastResult,
 } from '../types/spotify-api';
-import { UnauthorizedError } from '../types/error';
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
 
@@ -34,7 +34,6 @@ async function SearchSpotify(
     };
 }
 
-
 /**
  * Searches for audiobooks on Spotify using the provided access token and query.
  *
@@ -58,7 +57,7 @@ export async function searchAudiobooks(
  * Fetches details for a specific audiobook
  * @param accessToken Spotify accestoken
  * @param audiobookId Id for the audiobook
- * @returns 
+ * @returns
  */
 export async function getAudiobook(accessToken: string, audiobookId: string) {
     const response = await axios.get(`${SPOTIFY_API_BASE}/audiobooks/${audiobookId}`, {
@@ -70,7 +69,7 @@ export async function getAudiobook(accessToken: string, audiobookId: string) {
 }
 
 /**
- * 
+ *
  * @param accessToken Spotify access token
  * @param query Query to pass down to the API
  * @param limit max amount of results

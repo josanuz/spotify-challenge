@@ -1,7 +1,7 @@
 // this file deals with searching for podcasts and audiobooks on Spotify
 import { Router } from 'express';
-import { extracSpotifyTokenFromRequest } from '../util';
 import { searchAudiobooks, searchPodcasts } from '../services/spotify-search-service';
+import { extracSpotifyTokenFromRequest } from '../util';
 
 const router = Router();
 /**

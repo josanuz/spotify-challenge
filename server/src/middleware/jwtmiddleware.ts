@@ -4,7 +4,6 @@ import {
     extractTokenFromHeader,
     verifyToken,
 } from '../services/authentication-service';
-
 import { UnauthorizedError } from '../types/error';
 
 /**

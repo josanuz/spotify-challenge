@@ -36,12 +36,17 @@ export type VerificationResult = SuccesfulVerification | FailedVerification;
  * @param token - The Spotify token response containing access token and expiration.
  * @returns A signed JWT token.
  */
-export function generateToken(user: SpotifyUserProfile, token: SpotifyTokenResponse): string {
+export function generateToken(
+    user: SpotifyUserProfile,
+    localUser: { id: number },
+    token: SpotifyTokenResponse,
+): string {
     const payload: AuthenticationInfo = {
         sub: user.id, // Subject: user ID
         name: user.display_name, // Custom claim
         email: user.email, // Custom claim
         third_party_access_token: token.access_token, // Custom claim for third-party access token
+        localuser_id: localUser.id,
     };
 
     const options: jwt.SignOptions = {
@@ -123,4 +128,3 @@ export function extractTokenFromCookie(
 
     return cookies['session-token']; // Return the token from the cookie
 }
-

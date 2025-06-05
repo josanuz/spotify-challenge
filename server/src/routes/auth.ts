@@ -90,12 +90,12 @@ router.post('/code-begin', function (req, res) {
             const externalUser = await loadUserProfile(spotifyResponse.access_token);
             if (externalUser != null) {
                 // Check if the user already exists in the local database
-                const localUser = await searchLocalUserByExtrenalId(externalUser.id);
+                let localUser = await searchLocalUserByExtrenalId(externalUser.id);
                 if (!localUser) {
-                    await createLocalUser(externalUser, spotifyResponse.refresh_token);
+                    localUser = await createLocalUser(externalUser, spotifyResponse.refresh_token);
                 }
                 // Generate a JWT token for the user
-                const token = generateToken(externalUser, spotifyResponse);
+                const token = generateToken(externalUser, localUser, spotifyResponse);
 
                 res.status(200).json({
                     message: 'Authentication successful',
@@ -184,7 +184,7 @@ router.post('/refresh-token', async (req: Request, res: Response) => {
             .then(response => {
                 if (isOkCode(response.status)) {
                     const sptf_response = response.data as SpotifyTokenResponse;
-                    const newToken = generateToken(spotifyUser, sptf_response);
+                    const newToken = generateToken(spotifyUser, localUser, sptf_response);
                     res.status(200).json({
                         message: 'Token refreshed successfully',
                         token: newToken,

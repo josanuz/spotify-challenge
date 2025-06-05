@@ -6,6 +6,16 @@ import { LocalUser } from '../types/local-user';
 import { SpotifyUserProfile } from '../types/spotify-api';
 import { isOkCode } from '../util';
 
+export const fetchLocalUser = async (userId: number): Promise<LocalUser | null> => {
+    return await getConnection().then(
+        async connection =>
+            await connection
+                .query<LocalUser[]>('SELECT * from users where id = ?', [userId])
+                .then(res => (res && res.length > 0 ? res[0] : null))
+                .finally(() => connection.release()),
+    );
+};
+
 /**
  * Searchs for a local user that matches a given spotify id
  * @param spotifyId the spotify id to search for
@@ -14,10 +24,9 @@ import { isOkCode } from '../util';
 export const searchLocalUserByExtrenalId = async (spotifyId: string): Promise<LocalUser | null> => {
     const connection = await getConnection();
 
-    const result = await connection.query<LocalUser[]>(
-        'SELECT * FROM users WHERE spotify_id = ?',
-        [spotifyId],
-    );
+    const result = await connection.query<LocalUser[]>('SELECT * FROM users WHERE spotify_id = ?', [
+        spotifyId,
+    ]);
 
     if (result.length > 0) {
         return result[0];

@@ -1,8 +1,8 @@
 import { Request } from 'express';
 import {
+    decodeToken,
     extractTokenFromCookie,
     extractTokenFromHeader,
-    verifyToken,
 } from './services/authentication-service';
 import { UnauthorizedError } from './types/error';
 
@@ -11,22 +11,26 @@ export const isOkCode = (status: number): boolean => {
 };
 
 /**
- * extracts the spotify token from the JWT claims
+ * Extracts the spotify token from the JWT claims, this method does no verify the JWT signature
  * @param req Express request object
  * @returns the spotify token stored in the JWT claims
  */
 export const extracSpotifyTokenFromRequest = (req: Request): string => {
+    const token = decodeJWTfromRequest(req);
+    if (!token) {
+        throw new UnauthorizedError('Unauthorized: No token provided');
+    }
+    return token.third_party_access_token;
+};
+
+/**
+ * Decodes the JWT from request, does not validates the signing
+ * @param req Express request
+ * @returns
+ */
+export const decodeJWTfromRequest = (req: Request) => {
     const token =
         extractTokenFromHeader(req.headers.authorization) || extractTokenFromCookie(req.cookies);
-    if (!token) {
-        throw new Error('Unauthorized: No token provided');
-    }
-
-    const verification = verifyToken(token);
-    if (!verification.valid) {
-        throw new UnauthorizedError();
-    }
-
-    const { third_party_access_token } = verification.payload;
-    return third_party_access_token;
+    if (!token) return null;
+    return decodeToken(token);
 };

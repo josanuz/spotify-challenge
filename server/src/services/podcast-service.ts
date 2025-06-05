@@ -3,12 +3,12 @@
     It includes functions to get the personal library, add a podcast to the library,
     and remove a podcast from the library.
 */
+import { console } from 'inspector';
 import { PoolConnection } from 'mariadb';
 import { getConnection } from '../data/connection';
 import { AppError, InternalServerError } from '../types/error';
 import { LibraryItem, LibraryItemResult } from '../types/library';
 import { SpotifyPodcastResult } from '../types/spotify-api';
-import { console } from 'inspector';
 
 /**
  * Fetches the personal podcast library of a user from the database and enriches it with podcast details from Spotify.
@@ -28,7 +28,7 @@ export const getPersonalLibrary = async (userId: number, spotifyToken: string) =
     try {
         connection = await getConnection();
         const data = await connection.query<LibraryItem[]>(query, [userId]);
-        
+
         if (!data || data.length < 1) {
             return [];
         }
@@ -75,7 +75,7 @@ export const addToLibrary = async (userId: number, podcastId: string, libraryNam
         throw new InternalServerError('Database query error', err);
     });
 
-    console.log(result)
+    console.log(result);
 
     connection.release();
 

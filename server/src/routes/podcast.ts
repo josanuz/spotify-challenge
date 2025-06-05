@@ -1,7 +1,7 @@
 // this file deals with fetching podcasts from Spotify
 import { Router } from 'express';
-import { extracSpotifyTokenFromRequest } from '../util';
 import { getPodcast } from '../services/spotify-search-service';
+import { extracSpotifyTokenFromRequest } from '../util';
 
 const router = Router();
 

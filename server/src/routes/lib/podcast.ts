@@ -9,8 +9,8 @@ import {
     getPersonalLibrary,
     removeFromLibrary,
 } from '../../services/podcast-service';
-import { loadUserProfile, searchLocalUserByExtrenalId } from '../../services/user-service';
-import { extracSpotifyTokenFromRequest } from '../../util';
+import { fetchLocalUser } from '../../services/user-service';
+import { decodeJWTfromRequest, extracSpotifyTokenFromRequest } from '../../util';
 
 const router = Router();
 
@@ -18,16 +18,16 @@ const router = Router();
  * Fetches the user's podcast library.
  */
 router.get('/', async (req, res) => {
-    const spotifyToken = extracSpotifyTokenFromRequest(req);
-    const user = await loadUserProfile(spotifyToken);
-    const localUser = await searchLocalUserByExtrenalId(user.id);
+    const token = decodeJWTfromRequest(req);
+    const spotifyCode = extracSpotifyTokenFromRequest(req);
+    const localUser = await fetchLocalUser(token!.localuser_id);
 
     if (!localUser) {
         res.status(404).send('User not found');
         return;
     }
 
-    const libraryItems = await getPersonalLibrary(localUser.id, spotifyToken);
+    const libraryItems = await getPersonalLibrary(localUser.id, spotifyCode);
     res.status(200).json(libraryItems);
 });
 
@@ -35,9 +35,8 @@ router.get('/', async (req, res) => {
  * Adds a podcast to the user's library.
  */
 router.post('/:libraryName/:id', async (req, res) => {
-    const spotifyToken = extracSpotifyTokenFromRequest(req);
-    const user = await loadUserProfile(spotifyToken);
-    const localUser = await searchLocalUserByExtrenalId(user.id);
+    const token = decodeJWTfromRequest(req);
+    const localUser = await fetchLocalUser(token!.localuser_id);
     const { id: podcastId, libraryName } = req.params;
 
     if (!libraryName || !podcastId) {
@@ -52,15 +51,13 @@ router.post('/:libraryName/:id', async (req, res) => {
             res.status(400).send('Could not add podcast to library');
         }
     });
-
 });
 /**
  * Removes a podcast from the user's library.
  */
 router.delete('/:libraryName/:id', async (req, res) => {
-    const spotifyToken = extracSpotifyTokenFromRequest(req);
-    const user = await loadUserProfile(spotifyToken);
-    const localUser = await searchLocalUserByExtrenalId(user.id);
+    const token = decodeJWTfromRequest(req);
+    const localUser = await fetchLocalUser(token!.localuser_id);
     const { libraryName, id: podcastId } = req.params;
 
     if (!libraryName || !podcastId) {

@@ -10,4 +10,6 @@ export interface AuthenticationInfo extends JwtPayload {
     name: string;
     /** user e-mail */
     email: string;
+    /** local user id */
+    localuser_id: number;
 }

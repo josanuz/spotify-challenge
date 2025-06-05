@@ -1,13 +1,14 @@
-import express from 'express';
 import cors from 'cors';
-import { JWTMiddleware } from './middleware/jwtmiddleware';
-import authRouter from './routes/auth';
-import userRouter from './routes/user';
-import searchRouter from './routes/search';
-import podcastRouter from './routes/podcast';
-import librabryRouter from './routes/lib';
+import express from 'express';
 import Environment from './config/enviroment';
 import errorHandler from './middleware/error-handler';
+import { JWTMiddleware } from './middleware/jwtmiddleware';
+import authRouter from './routes/auth';
+import librabryRouter from './routes/lib';
+import podcastRouter from './routes/podcast';
+import searchRouter from './routes/search';
+import userRouter from './routes/user';
+
 // new express app
 const app = express();
 // use port from env
