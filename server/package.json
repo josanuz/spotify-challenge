@@ -1,42 +1,41 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec node --inspect-brk -r ts-node/register src/server.ts",
-    "lint": "eslint 'src/**/*.ts'",
-    "prettier": "prettier --write 'src/**/*.ts'",
-    "lint:fix": "eslint --fix 'src/**/*.ts'"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "axios": "^1.9.0",
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "pg": "8.16.0",
-    "pino": "^9.7.0",
-    "query-string": "^9.2.0",
-    "uuid": "^11.1.0"
-  },
-  "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/cors": "^2.8.18",
-    "@types/express": "^5.0.2",
-    "@types/jsonwebtoken": "^9.0.9",
-    "@types/node": "^22.15.23",
-    "@types/pg": "^8.15.2",
-    "eslint": "^9.27.0",
-    "eslint-config-prettier": "^10.1.5",
-    "nodemon": "^3.1.10",
-    "prettier": "^3.5.3",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.33.0"
-  }
+    "name": "server",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/server.js",
+        "dev": "nodemon --watch 'src/**/*.ts' --exec node --inspect-brk -r ts-node/register src/server.ts",
+        "lint": "eslint 'src/**/*.ts'",
+        "prettier": "prettier --write 'src/**/*.ts'",
+        "lint:fix": "eslint --fix 'src/**/*.ts'"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^1.9.0",
+        "cors": "^2.8.5",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "mariadb": "^3.4.2",
+        "pino": "^9.7.0",
+        "query-string": "^9.2.0",
+        "uuid": "^11.1.0"
+    },
+    "devDependencies": {
+        "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+        "@types/cors": "^2.8.18",
+        "@types/express": "^5.0.2",
+        "@types/jsonwebtoken": "^9.0.9",
+        "@types/node": "^22.15.23",
+        "eslint": "^9.27.0",
+        "eslint-config-prettier": "^10.1.5",
+        "nodemon": "^3.1.10",
+        "prettier": "^3.5.3",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.33.0"
+    }
 }

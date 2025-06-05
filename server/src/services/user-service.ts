@@ -1,10 +1,10 @@
 // Provides service functions to deal with local users
 import axios from 'axios';
 import { getConnection } from '../data/connection';
-import { LocalUser } from '../types/local-user';
-import { isOkCode } from '../util';
-import { SpotifyUserProfile } from '../types/spotify-api';
 import { AppError, UnauthorizedError } from '../types/error';
+import { LocalUser } from '../types/local-user';
+import { SpotifyUserProfile } from '../types/spotify-api';
+import { isOkCode } from '../util';
 
 /**
  * Searchs for a local user that matches a given spotify id
@@ -14,10 +14,13 @@ import { AppError, UnauthorizedError } from '../types/error';
 export const searchLocalUserByExtrenalId = async (spotifyId: string): Promise<LocalUser | null> => {
     const connection = await getConnection();
 
-    const result = await connection.query('SELECT * FROM users WHERE spotify_id = $1', [spotifyId]);
+    const result = await connection.query<LocalUser[]>(
+        'SELECT * FROM users WHERE spotify_id = ?',
+        [spotifyId],
+    );
 
-    if (result.rows.length > 0) {
-        return result.rows[0] as LocalUser;
+    if (result.length > 0) {
+        return result[0];
     }
     connection.release();
     return null;
@@ -36,13 +39,12 @@ export const createLocalUser = async (
     const connection = await getConnection();
 
     const result = await connection
-        .query(
-            'INSERT INTO users (spotify_id, user_name, image_url, refresh_token) VALUES ($1, $2, $3, $4) RETURNING *',
-            [user.id, user.display_name, user.images[0]?.url ?? '', refreshToken],
-        )
+        .query<
+            LocalUser[]
+        >('INSERT INTO users (spotify_id, user_name, image_url, refresh_token) VALUES (?, ?, ?, ?) RETURNING *', [user.id, user.display_name, user.images[0]?.url ?? '', refreshToken])
         .finally(() => connection.release());
 
-    return result.rows[0] as LocalUser;
+    return result[0] as LocalUser;
 };
 
 /**
@@ -57,13 +59,12 @@ export const updateLocalUserRefreshToken = async (
 ): Promise<LocalUser | null> => {
     const connection = await getConnection();
     const result = await connection
-        .query('UPDATE users SET refresh_token = $1 WHERE spotify_id = $2 RETURNING *', [
-            refreshToken,
-            spotify_id,
-        ])
+        .query<
+            LocalUser[]
+        >('UPDATE users SET refresh_token = ? WHERE spotify_id = ? RETURNING *', [refreshToken, spotify_id])
         .finally(() => connection.release());
 
-    return result.rows.length > 0 ? (result.rows[0] as LocalUser) : null;
+    return result && result[0];
 };
 
 /**

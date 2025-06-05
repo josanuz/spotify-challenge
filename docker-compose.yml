@@ -2,17 +2,18 @@ version: "3.8"
 
 services:
   podcast-app-db:
-    image: postgres:15
+    image: mariadb
     container_name: podcast-app-db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: podcast
+      MARIADB_USER: app_user
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_RANDOM_ROOT_PASSWORD: "true"
+      MARIADB_DATABASE: "podcast"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/mysql
       - ./schema/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     ports:
-      - "5432:5432"
+      - "3306:3306"
 
   podcast-app-server:
     build:
@@ -28,8 +29,8 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       REDIRECT_URI: ${REDIRECT_URI}
       DB_HOST: podcast-app-db
-      DB_PORT: "5432"
-      DB_USER: postgres
+      DB_PORT: "3306"
+      DB_USER: app_user
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: podcast
     ports:

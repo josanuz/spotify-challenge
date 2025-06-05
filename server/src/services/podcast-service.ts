@@ -3,11 +3,12 @@
     It includes functions to get the personal library, add a podcast to the library,
     and remove a podcast from the library.
 */
-import { PoolClient } from 'pg';
+import { PoolConnection } from 'mariadb';
 import { getConnection } from '../data/connection';
 import { AppError, InternalServerError } from '../types/error';
 import { LibraryItem, LibraryItemResult } from '../types/library';
 import { SpotifyPodcastResult } from '../types/spotify-api';
+import { console } from 'inspector';
 
 /**
  * Fetches the personal podcast library of a user from the database and enriches it with podcast details from Spotify.
@@ -19,16 +20,15 @@ export const getPersonalLibrary = async (userId: number, spotifyToken: string) =
     const query = `
         SELECT user_id, library_name, podcast_id
         FROM podcast_library
-        WHERE user_id = $1
+        WHERE user_id = ?
         ORDER BY library_name, podcast_id
     `;
 
-    let connection: PoolClient | null = null;
+    let connection: PoolConnection | null = null;
     try {
         connection = await getConnection();
-        const rs = await connection.query(query, [userId]);
-        const data = rs.rows as LibraryItem[];
-
+        const data = await connection.query<LibraryItem[]>(query, [userId]);
+        
         if (!data || data.length < 1) {
             return [];
         }
@@ -69,15 +69,17 @@ export const getPersonalLibrary = async (userId: number, spotifyToken: string) =
 export const addToLibrary = async (userId: number, podcastId: string, libraryName: string) => {
     const connection = await getConnection();
     const query =
-        ' INSERT INTO podcast_library (user_id, library_name, podcast_id) VALUES ($1, $2, $3)';
+        ' INSERT INTO podcast_library (user_id, library_name, podcast_id) VALUES (?, ?, ?)';
 
     const result = await connection.query(query, [userId, libraryName, podcastId]).catch(err => {
         throw new InternalServerError('Database query error', err);
     });
 
+    console.log(result)
+
     connection.release();
 
-    return (result.rowCount ?? -1) > 0;
+    return result != null;
 };
 
 /**
@@ -91,7 +93,7 @@ export const removeFromLibrary = async (userId: number, podcastId: string, libra
     const connection = await getConnection();
     const query = `
         DELETE FROM podcast_library
-        WHERE user_id = $1 AND podcast_id = $2 AND library_name = $3
+        WHERE user_id = ? AND podcast_id = ? AND library_name = ?
     `;
 
     const result = await connection
@@ -101,5 +103,6 @@ export const removeFromLibrary = async (userId: number, podcastId: string, libra
         })
         .finally(() => connection.release());
 
-    return (result.rowCount ?? -1) > 0;
+    console.log(result);
+    return result != null;
 };
