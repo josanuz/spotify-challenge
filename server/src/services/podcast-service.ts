@@ -3,6 +3,7 @@
     It includes functions to get the personal library, add a podcast to the library,
     and remove a podcast from the library.
 */
+import { PoolClient } from 'pg';
 import { getConnection } from '../data/connection';
 import { AppError, InternalServerError } from '../types/error';
 import { LibraryItem, LibraryItemResult } from '../types/library';
@@ -22,44 +23,40 @@ export const getPersonalLibrary = async (userId: number, spotifyToken: string) =
         ORDER BY library_name, podcast_id
     `;
 
-    const data = await getConnection()
-        .then(connection => {
-            return connection
-                .query<LibraryItem>(query, [userId])
-                .then(rs => rs.rows)
-                .catch(() => {
-                    throw new InternalServerError('Database query error');
-                })
-                .finally(() => connection.release());
-        })
-        .catch(err => {
-            throw new InternalServerError('Database connection error', err);
+    let connection: PoolClient | null = null;
+    try {
+        connection = await getConnection();
+        const rs = await connection.query(query, [userId]);
+        const data = rs.rows as LibraryItem[];
+
+        if (!data || data.length < 1) {
+            return [];
+        }
+
+        const ids = data.map(item => item.podcast_id).join(',');
+        const podcastDetails = await fetch(`https://api.spotify.com/v1/shows?ids=${ids}`, {
+            headers: {
+                Authorization: `Bearer ${spotifyToken}`,
+            },
         });
-    // fetch podcast details from Spotify
-    if (!data || data.length < 1) {
-        return [];
-    }
-    const ids = data.map(item => item.podcast_id).join(',');
-    const podcastDetails = await fetch(`https://api.spotify.com/v1/shows?ids=${ids}`, {
-        headers: {
-            Authorization: `Bearer ${spotifyToken}`,
-        },
-    });
 
-    if (!podcastDetails.ok) {
-        throw new AppError(podcastDetails.statusText, podcastDetails.status);
-    }
-    const podcastData = await podcastDetails.json();
-    const podcasts: SpotifyPodcastResult[] = podcastData.shows || [];
-    const enrichedLibrary: LibraryItemResult[] = data.map(item => {
-        const podcastInfo = podcasts.find(p => p.id === item.podcast_id);
-        return {
-            ...item,
-            podcast_info: podcastInfo,
-        };
-    });
+        if (!podcastDetails.ok) {
+            throw new AppError(podcastDetails.statusText, podcastDetails.status);
+        }
+        const podcastData = await podcastDetails.json();
+        const podcasts: SpotifyPodcastResult[] = podcastData.shows || [];
+        const enrichedLibrary: LibraryItemResult[] = data.map(item => {
+            const podcastInfo = podcasts.find(p => p.id === item.podcast_id);
+            return {
+                ...item,
+                podcast_info: podcastInfo,
+            };
+        });
 
-    return enrichedLibrary;
+        return enrichedLibrary;
+    } finally {
+        connection?.release();
+    }
 };
 
 /**
@@ -74,12 +71,11 @@ export const addToLibrary = async (userId: number, podcastId: string, libraryNam
     const query =
         ' INSERT INTO podcast_library (user_id, library_name, podcast_id) VALUES ($1, $2, $3)';
 
-    const result = await connection
-        .query(query, [userId, libraryName, podcastId])
-        .catch(err => {
-            throw new InternalServerError('Database query error', err);
-        })
-        .finally(() => connection.release());
+    const result = await connection.query(query, [userId, libraryName, podcastId]).catch(err => {
+        throw new InternalServerError('Database query error', err);
+    });
+
+    connection.release();
 
     return (result.rowCount ?? -1) > 0;
 };

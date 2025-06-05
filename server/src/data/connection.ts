@@ -8,8 +8,7 @@ const pool = new Pool(DataBaseConfig);
  */
 export const getConnection = async (): Promise<PoolClient> => {
     try {
-        const client = await pool.connect();
-        return client;
+        return await pool.connect();
     } catch (error) {
         console.error('Error connecting to the database:', error);
         throw error;

@@ -13,6 +13,7 @@ A project for managing and browsing a collection of podcasts.
 
 - **Server:** Node.js, Express
 - **Client:** React
+- **Docker**
 
 ## Getting Started
 
@@ -20,15 +21,18 @@ A project for managing and browsing a collection of podcasts.
 
 - Node.js (v22+)
 - npm
+- Docker & Docker compose
 
 
 ### Configuration
+- Copy .env.example and substitute the vars with your own
 
 ### Installation
+- Run `docker compose build`
 
 ### Running the App
-
-The app will be available at `http://localhost:3000`.
+`docker compose up`
+The app will be available at `http://localhost:8080`.
 
 ## Project Structure
 
@@ -36,6 +40,7 @@ The app will be available at `http://localhost:3000`.
 audibook-library/
 ├── server/         # Express API
 ├── client/         # React app
+|__ schema          # database schema
 └── README.md
 ```
 

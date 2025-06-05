@@ -29,7 +29,7 @@ services:
       REDIRECT_URI: ${REDIRECT_URI}
       DB_HOST: podcast-app-db
       DB_PORT: "5432"
-      DB_USER: podcast_user
+      DB_USER: postgres
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: podcast
     ports:
@@ -39,6 +39,8 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    depends_on:
+      - podcast-app-server
     container_name: myapp-static-server
     ports:
       - "8080:8080"

@@ -1,0 +1,20 @@
+:8080 {
+    
+
+    handle /api/* {
+        reverse_proxy http://podcast-app-server:5545
+    }
+
+    handle /auth/* {
+        reverse_proxy http://podcast-app-server:5545
+    }
+
+    handle {
+        root * /usr/share/caddy    
+        try_files {path} index.html
+        header /index.html Cache-Control "public, max-age=0, must-revalidate"
+        file_server
+    }
+
+}
+

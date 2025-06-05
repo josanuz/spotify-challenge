@@ -9,8 +9,10 @@ COPY . .
 RUN npm run build
 
 # SERVE
-FROM nginx:stable-alpine AS production
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/public /usr/share/nginx/html
-EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+FROM caddy:2-alpine
+
+# Copy build output from React (assumes you've built it outside Docker)
+COPY --from=build /app/public /usr/share/caddy/
+
+# Copy the Caddyfile to the default location
+COPY caddy/Caddyfile /etc/caddy/Caddyfile

@@ -11,7 +11,5 @@ export const DataBaseConfig: PoolConfig = {
     password: process.env.DB_PASSWORD || 'password',
     database: process.env.DB_NAME || 'podcast',
     ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-    max: parseInt(process.env.DB_MAX_CLIENTS || '10'),
-    maxUses: 10,
-    application_name: process.env.DB_APP_NAME || 'audiobooks-app',
+    idleTimeoutMillis: 30000,
 };
