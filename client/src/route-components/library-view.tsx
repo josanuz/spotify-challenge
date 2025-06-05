@@ -1,7 +1,9 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { useQuery } from '@tanstack/react-query';
+import clsx from 'clsx';
 import { ChevronDownIcon, Trash } from 'lucide-react';
 import React from 'react';
+import { data } from 'react-router';
 import { getLibrary, removeFromLibrary } from '../api/podcast';
 import { type LibraryItem } from '../types/spotify-api';
 
@@ -19,19 +21,22 @@ const PodcastLibraryGrid: React.FC = () => {
         // TODO: Handle error case
     };
 
-    if (libraryQuery.isLoading || libraryQuery.isFetching || libraryQuery.isPending) {
-        return <p className="text-center text-xl">Loading library...</p>;
-    }
-
     if (libraryQuery.isError) {
         return <p className="text-red-500">Error loading library</p>;
     }
 
-    return <PodcastListFolder items={libraryQuery.data || []} onItemDelete={handleDelete} />;
+    return (
+        <PodcastListFolder
+            items={libraryQuery.data || []}
+            onItemDelete={handleDelete}
+            isLoading={libraryQuery.isLoading}
+        />
+    );
 };
 
 interface PodcastListFolderProps {
     items: LibraryItem[];
+    isLoading: boolean;
     onItemDelete: (item: LibraryItem) => void;
 }
 
@@ -46,7 +51,14 @@ export const PodcastListFolder = (props: PodcastListFolderProps) => {
     }, new Map<string, LibraryItem[]>());
 
     return (
-        <div className="w-full rounded-md border border-white/60 px-2">
+        <div
+            className={`w-full rounded-md border border-white/60 px-2 ${clsx(props.isLoading && 'h-[80%]')}`}
+        >
+            {props.isLoading && data.length == 0 && (
+                <div className="w-full h-full flex items-center justify-center">
+                    <b>Loading Library</b>
+                </div>
+            )}
             {Array.from(items.entries()).map(([libraryName, items], idx) => (
                 <Disclosure
                     key={libraryName}
