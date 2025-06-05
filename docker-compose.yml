@@ -2,10 +2,10 @@ version: "3.8"
 
 services:
   podcast-app-db:
-    image: postgres:14
+    image: postgres:15
     container_name: podcast-app-db
     environment:
-      POSTGRES_USER: podcast_user
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: podcast
     volumes:
@@ -34,7 +34,6 @@ services:
       DB_NAME: podcast
     ports:
       - "5545:5545"
-    # command: sh -c "export MODE=production && npm run build && npm run start"
 
   static-server:
     build:
