@@ -5,7 +5,7 @@
 */
 import { Tab, TabGroup, TabList } from '@headlessui/react';
 import { BookOpen, Home } from 'lucide-react';
-import { Link, Outlet } from 'react-router';
+import { Link, Outlet, useSearchParams } from 'react-router';
 
 /**
  * Default tabs for the navigation.
@@ -16,6 +16,7 @@ const tabs = [
 ];
 
 const TopNavigation = () => {
+    const [searchParams] = useSearchParams();    
     return (
         <TabGroup>
             <TabList className="flex flex-row gap-4">
@@ -23,7 +24,7 @@ const TopNavigation = () => {
                     <Tab
                         as={Link}
                         key={to}
-                        to={to}
+                        to={searchParams.has('query') ? `${to}?${searchParams.toString()}` : to}
                         className="data-selected:border-b data-selected:border-green-500 data-selected:text-white data-hover:border-b data-hover:border-green-300/50 text-gray-300 flex items-center gap-2 px-4 py-2 transition-colors"
                     >
                         {label}
@@ -35,6 +36,7 @@ const TopNavigation = () => {
 };
 
 const BottomNavigation = () => {
+    const [searchParams] = useSearchParams();
     return (
         <TabGroup>
             <TabList className="flex flex-row gap-4">
@@ -42,7 +44,7 @@ const BottomNavigation = () => {
                     <Tab
                         as={Link}
                         key={to}
-                        to={to}
+                        to={searchParams.has('query') ? `${to}?${searchParams.toString()}` : to}
                         className="data-selected:text-green-500 data-hover:text-green-100  text-gray-300 flex items-center gap-2 px-4 py-2 transition-colors"
                     >
                         {icon}

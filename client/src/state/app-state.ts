@@ -65,7 +65,6 @@ export const authenticationAtom = atom('authentication', () => {
     const { token } = authStore.getState();
 
     injectEffect(() => {
-        console.log('Authentication store initialized with token:', token);
         if (authStore.getState().token) {
             const intervalId = setInterval(() => {
                 if (isTokenAboutToExpire(token)) {
