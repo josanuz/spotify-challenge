@@ -22,11 +22,11 @@ const PodcastDialog = () => {
         <Dialog open onClose={() => navigate(-1)} className="relative z-50">
             <DialogBackdrop className="fixed inset-0 bg-black/60" />
             <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-                <DialogPanel className="h-auto lg:w-[60%] lg:aspect-[3/2] aspect-[2/3] bg-white rounded-2xl shadow-xl overflow-y-auto">
+                <DialogPanel className="h-auto max-h-[90vh] xl:w-[60%] md:w-[90%] lg:aspect-[3/2] aspect-[2/3] bg-white rounded-2xl shadow-xl overflow-y-auto">
                     {/* Waiting for query to complete */}
                     {query.isLoading && (
                         <>
-                            <div className="flex items-center justify-center h-full w-full">
+                            <div className="flex items-center justify-center h-[64px] w-[64px]">
                                 <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-200" />
                             </div>
                         </>

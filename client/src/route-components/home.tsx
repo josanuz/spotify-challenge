@@ -67,9 +67,7 @@ export const Home = () => {
                         className={`overflow-auto shrink grow basis-0 ${clsx(audioBookQuery.isLoading || audioBookQuery.isError ? 'flex items-center justify-center' : 'inline-block')}`}
                     >
                         {(currentLibraryQuery.isLoading || audioBookQuery.isLoading) && (
-                            <div className="flex items-center justify-center h-full">
-                                <p className="text-white">Loading</p>
-                            </div>
+                            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-200" />
                         )}
                         {querySuccessNNoData && (
                             <div className="flex items-center justify-center h-full">
