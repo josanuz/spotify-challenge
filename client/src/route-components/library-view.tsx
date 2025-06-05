@@ -63,10 +63,10 @@ export const PodcastListFolder = (props: PodcastListFolderProps) => {
                 <Disclosure
                     key={libraryName}
                     as="div"
-                    className="w-full lg:p-4 lg:pl-8 p-2 pl-4 border-b border-white/40 "
+                    className="w-full lg:p-4 lg:pl-8 p-2 pl-4 border-b border-white/40 relative"
                     defaultOpen={idx === 0}
                 >
-                    <DisclosureButton className="group flex w-full items-center justify-between pb-4">
+                    <DisclosureButton className="group flex w-full items-center justify-between h-8 m-1 sticky top-0 right-0 bg-[var(--bg-color)]">
                         <span className="text-sm/6 font-bold text-white group-data-hover:text-white/80">
                             {libraryName.toUpperCase()}
                         </span>
