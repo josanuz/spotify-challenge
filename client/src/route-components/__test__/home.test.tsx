@@ -14,7 +14,7 @@ const params = vi.hoisted(() => new URLSearchParams());
 // Mock PodcastGrid component
 vi.mock('../../components/podcast-grid', () => ({
     __esModule: true,
-    default: ({ library, podcasts, onAdd, onView }: any) => (
+    default: ({ podcasts, onAdd, onView }: any) => (
         <div data-testid="PodcastGrid">
             {podcasts.map((podcast: any) => (
                 <div key={podcast.id}>

@@ -16,7 +16,7 @@ const mockPodcast = {
     explicit: true,
 } as SpotifyPodcast;
 
-const contentMatcher = (text: string) => (content: string, node: Element | null) =>
+const contentMatcher = (text: string) => (_: string, node: Element | null) =>
     node?.textContent == text;
 
 describe('PodcastDetails', () => {

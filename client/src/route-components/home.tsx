@@ -34,7 +34,7 @@ export const Home = () => {
         return hasData && hasLibrary;
     }, [audioBookQuery, currentLibraryQuery]);
 
-    const querySuccessNNoData = useMemo(() => {        
+    const querySuccessNNoData = useMemo(() => {
         if (!(audioBookQuery.isSuccess && currentLibraryQuery.isSuccess)) return false;
         const noData = audioBookQuery.data == null || audioBookQuery.data.items.length < 1;
         const noLibrary = currentLibraryQuery.data == null;
