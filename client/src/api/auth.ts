@@ -3,7 +3,7 @@
  */
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import api from './axios-clent';
+import api from './axios-client';
 
 /**
  * Response type for the token request.

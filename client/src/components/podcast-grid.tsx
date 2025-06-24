@@ -44,7 +44,10 @@ export default function PodcastGrid({ podcasts, onAdd, onView, library }: Props)
                     </button>
                     {/* If the items is in library, show a blue check otherwise check add button */}
                     {library.some(item => item.podcast_id === podcast.id) ? (
-                        <span className="absolute top-2 right-2 bg-blue-600 text-white rounded-full p-2 shadow-md">
+                        <span
+                            className="absolute top-2 right-2 bg-blue-600 text-white rounded-full p-2 shadow-md"
+                            aria-label={`${podcast.name} is on library`}
+                        >
                             <Check size={20} />
                         </span>
                     ) : (

@@ -3,7 +3,7 @@
  *  It includes functions to get podcast details, manage the library, and add or remove podcasts from the library.
  */
 import type { LibraryItem, SpotifyPodcast } from '../types/spotify-api';
-import api from './axios-clent';
+import api from './axios-client';
 
 /**
  * Fetches a podcast by its ID.

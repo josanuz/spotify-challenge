@@ -3,7 +3,7 @@
  * It includes functions to search for audiobooks and podcasts based on a query, with optional pagination.
  */
 import type { SpotifyAudiobook, SpotifyPodcast, SpotifySearchResult } from '../types/spotify-api';
-import api from './axios-clent';
+import api from './axios-client';
 
 /**
  * Interface for search parameters.

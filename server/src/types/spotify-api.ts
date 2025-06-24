@@ -55,7 +55,7 @@ export interface SpotifyUserProfile {
         filter_enabled: boolean;
         filter_locked: boolean;
     };
-    external_urls: { spotify: string };
+
     followers: { href: string; total: number };
     href: string;
     id: string;

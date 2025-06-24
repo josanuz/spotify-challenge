@@ -14,7 +14,7 @@ export interface SpotifySearchResult<T> {
 export interface SpotifyPodcast {
     available_markets: string[];
     description: string;
-    html_description: string;
+    html_description?: string;
     explicit: boolean;
     href: string;
     id: string;
@@ -57,7 +57,7 @@ export interface SpotifyUserProfile {
         filter_enabled: boolean;
         filter_locked: boolean;
     };
-    external_urls: { spotify: string };
+
     followers: { href: string; total: number };
     href: string;
     id: string;
@@ -76,7 +76,6 @@ export interface SpotifyShow {
     name: string;
     publisher: string;
     images: { url: string }[];
-    external_urls: { spotify: string };
 }
 export interface LibraryItem {
     user_id: number;
@@ -92,7 +91,7 @@ export interface UserProfile {
         filter_enabled: boolean;
         filter_locked: boolean;
     };
-    external_urls: { spotify: string };
+
     followers: { href: string; total: number };
     href: string;
     id: string;

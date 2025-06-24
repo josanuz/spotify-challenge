@@ -6,7 +6,7 @@ import { Dialog, DialogBackdrop, DialogPanel } from '@headlessui/react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams } from 'react-router';
 import { getPodcast } from '../api/podcast';
-import { PodcastDetails } from './PodcastDetails';
+import { PodcastDetails } from '../components/podcast-details';
 
 const PodcastDialog = () => {
     const navigate = useNavigate();
@@ -26,7 +26,10 @@ const PodcastDialog = () => {
                     {/* Waiting for query to complete */}
                     {query.isLoading && (
                         <>
-                            <div className="flex items-center justify-center h-[64px] w-[64px]">
+                            <div
+                                className="flex items-center justify-center h-[64px] w-[64px]"
+                                aria-label="loading indicator"
+                            >
                                 <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-200" />
                             </div>
                         </>

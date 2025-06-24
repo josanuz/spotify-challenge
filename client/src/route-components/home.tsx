@@ -28,14 +28,14 @@ export const Home = () => {
     });
 
     const querySuccessNData = useMemo(() => {
-        if (!audioBookQuery.isSuccess && currentLibraryQuery.isSuccess) return false;
+        if (!(audioBookQuery.isSuccess && currentLibraryQuery.isSuccess)) return false;
         const hasData = audioBookQuery.data != null && audioBookQuery.data.items.length > 0;
         const hasLibrary = currentLibraryQuery.data != null;
         return hasData && hasLibrary;
     }, [audioBookQuery, currentLibraryQuery]);
 
-    const querySuccessNNoData = useMemo(() => {
-        if (!audioBookQuery.isSuccess && currentLibraryQuery.isSuccess) return false;
+    const querySuccessNNoData = useMemo(() => {        
+        if (!(audioBookQuery.isSuccess && currentLibraryQuery.isSuccess)) return false;
         const noData = audioBookQuery.data == null || audioBookQuery.data.items.length < 1;
         const noLibrary = currentLibraryQuery.data == null;
         return noData || noLibrary;
@@ -67,11 +67,14 @@ export const Home = () => {
                         className={`overflow-auto shrink grow basis-0 ${clsx(audioBookQuery.isLoading || audioBookQuery.isError ? 'flex items-center justify-center' : 'inline-block')}`}
                     >
                         {(currentLibraryQuery.isLoading || audioBookQuery.isLoading) && (
-                            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-200" />
+                            <div
+                                aria-label="spinner"
+                                className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-200"
+                            />
                         )}
                         {querySuccessNNoData && (
                             <div className="flex items-center justify-center h-full">
-                                <p className="text-white">No Results found</p>
+                                <p className="text-white">No Results Found</p>
                             </div>
                         )}
                         {querySuccessNData && (

@@ -22,7 +22,7 @@ export const PodcastDetails = ({ podcast }: PodcastDetailsProps) => {
             {/* Image */}
             <div className="flex-shrink-0 w-full lg:w-1/2 h-64 lg:h-full">
                 <img
-                    src={podcast.images[0]?.url}
+                    src={podcast.images[0]?.url ?? ''}
                     alt={podcast.name}
                     className="w-full h-full object-cover rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none"
                 />

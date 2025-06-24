@@ -3,7 +3,7 @@
  * It includes a function to fetch the current user's profile information.
  */
 import type { UserProfile } from '../types/spotify-api';
-import api from './axios-clent';
+import api from './axios-client';
 
 /**
  * Fetches the current user's profile information.
